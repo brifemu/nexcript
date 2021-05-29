@@ -1,0 +1,24 @@
+.login-form {
+  background-color: #1c99f0;
+}
+
+.login-form label, .login-form small {
+  color: #FFFFFF;
+}
+
+.login-form label {
+  font-weight: bold;
+}
+
+.login-video {
+  padding: 0;
+}
+
+.login-video video {
+  width: 100%;
+}
+
+.login-container {
+  height: 100%;
+}
+/*# sourceMappingURL=styles.css.map */

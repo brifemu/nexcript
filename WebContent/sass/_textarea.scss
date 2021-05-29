@@ -1,0 +1,17 @@
+@import '_colors.scss';
+
+textarea {
+    &.publication {
+	width:100%;
+        resize: none;
+        border-color: $primary;
+        &:focus {
+            border-color: $secondary;
+        }
+    }
+    &.error {
+        border: 1px dashed red;
+        font-weight: 300;
+        color: red;
+    }
+}

@@ -1,0 +1,51 @@
+@import '_colors.scss';
+
+$login_start_background: $white;
+
+
+$login_form_background: $primary;
+$login_form_label: $white;
+
+.login-video {
+    position:fixed;
+    width: 100%;
+    z-index: -1;
+}
+
+.login-start {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 25vh;
+    h1 {
+        color: $white;
+        text-shadow: 4px 4px black;
+        font-weight: bold;
+    }
+}
+.login-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-left: 10vh;
+    padding-right: 10vh;
+    padding-bottom: 25vh;
+    background-color: $login_form_background;
+    h1 {
+        color: $white;
+        text-shadow: 4px 4px black;
+        font-weight: bold;
+    }
+    label, small {
+        color: $login_form_label;
+    }
+    label {
+        font-weight: bold;
+    }
+}
+
+.container-fluid
+{
+    height: 100vh;
+}

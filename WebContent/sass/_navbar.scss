@@ -1,0 +1,31 @@
+@import '_colors.scss';
+
+$nav_font_color: $primary;
+$nav_font_color_hover: $secondary;
+$nav_bottom_shadow_color: #bebebe;
+nav.navbar{
+    -webkit-box-shadow:0px 2px 2px $nav_bottom_shadow_color;
+    -moz-box-shadow:0px 2px 2px $nav_bottom_shadow_color;
+    box-shadow:0px 2px 5px $nav_bottom_shadow_color;
+    background-color: white;
+    a i {
+        color: $nav_font_color;
+        font-size: 1.3em;
+    }
+}
+li.nav-item {
+    &.active {
+        color: $primary;
+    border-bottom: 3px solid $primary;
+    }
+    a.nav-link {
+        font-weight: bold; 
+        color: $nav_font_color;
+    }
+    &:hover {
+        border-bottom: 3px solid $primary;
+        a.nav-link {
+            color: $nav_font_color_hover;
+        }
+    }
+}

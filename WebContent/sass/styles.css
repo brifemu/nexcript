@@ -1,0 +1,244 @@
+.login-video {
+  position: fixed;
+  width: 100%;
+  z-index: -1;
+}
+
+.login-start {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  margin-bottom: 25vh;
+}
+
+.login-start h1 {
+  color: #DCDCDD;
+  text-shadow: 4px 4px black;
+  font-weight: bold;
+}
+
+.login-form {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  padding-left: 10vh;
+  padding-right: 10vh;
+  padding-bottom: 25vh;
+  background-color: #1985A1;
+}
+
+.login-form h1 {
+  color: #DCDCDD;
+  text-shadow: 4px 4px black;
+  font-weight: bold;
+}
+
+.login-form label, .login-form small {
+  color: #DCDCDD;
+}
+
+.login-form label {
+  font-weight: bold;
+}
+
+.container-fluid {
+  height: 100vh;
+}
+
+.btn-primary {
+  background-color: #1985A1;
+  color: #DCDCDD;
+}
+
+.btn-primary:hover {
+  background-color: #4C5C68;
+}
+
+.btn-light {
+  background-color: #DCDCDD;
+}
+
+.btn-dark {
+  background-color: #46494C;
+}
+
+nav.navbar {
+  -webkit-box-shadow: 0px 2px 2px #bebebe;
+  box-shadow: 0px 2px 5px #bebebe;
+  background-color: white;
+}
+
+nav.navbar a i {
+  color: #1985A1;
+  font-size: 1.3em;
+}
+
+li.nav-item.active {
+  color: #1985A1;
+  border-bottom: 3px solid #1985A1;
+}
+
+li.nav-item a.nav-link {
+  font-weight: bold;
+  color: #1985A1;
+}
+
+li.nav-item:hover {
+  border-bottom: 3px solid #1985A1;
+}
+
+li.nav-item:hover a.nav-link {
+  color: #4C5C68;
+}
+
+span.badge.badge-primary {
+  background-color: #1985A1;
+}
+
+span.badge.badge-alert {
+  color: #DCDCDD;
+  background-color: #e74c3c;
+}
+
+img.profile-small {
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+}
+
+img.profile-medium {
+  height: 70px;
+  width: 70px;
+  border-radius: 50%;
+}
+
+img.profile-big {
+  height: 200px;
+  width: 200px;
+  border-radius: 50%;
+}
+
+img.profile-publication {
+  height: 80px;
+  width: 80px;
+}
+
+.notification-icon {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.notification-icon ion-icon {
+  color: red !important;
+}
+
+.notification-date {
+  font-size: 0.6em;
+  color: darkgray;
+}
+
+.notification-title {
+  width: 230px;
+  font-size: 0.8em;
+  font-weight: bold;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.notification-content {
+  width: 230px;
+  font-size: 0.8em;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.notification {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  width: 300px;
+  -ms-flex-line-pack: justify;
+      align-content: space-between;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.notification .container {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+
+.text-primary {
+  color: #1985A1 !important;
+}
+
+.text-secondary {
+  color: #4C5C68 !important;
+}
+
+textarea.publication {
+  width: 100%;
+  resize: none;
+  border-color: #1985A1;
+}
+
+textarea.publication:focus {
+  border-color: #4C5C68;
+}
+
+textarea.error {
+  border: 1px dashed red;
+  font-weight: 300;
+  color: red;
+}
+
+.code i {
+  font-size: 4em;
+}
+
+label.error {
+  color: red;
+  font-size: 1rem;
+  display: block;
+  margin-top: 5px;
+}
+
+input.error {
+  border: 1px dashed red;
+  font-weight: 300;
+  color: red;
+}
+/*# sourceMappingURL=styles.css.map */

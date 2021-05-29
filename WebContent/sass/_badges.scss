@@ -1,0 +1,15 @@
+@import '_colors.scss';
+
+$badge_primary_background: $primary;
+$badge_alert_background: $alert;
+$badge_alert_color_font: $white;
+
+span.badge {
+    &.badge-primary {
+        background-color: $badge_primary_background;
+    }
+    &.badge-alert {
+        color: $badge_alert_color_font;
+        background-color: $badge_alert_background;
+    }
+}

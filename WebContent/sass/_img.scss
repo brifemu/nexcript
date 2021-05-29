@@ -1,0 +1,21 @@
+img {
+    &.profile-small {
+        height: 40px;
+        width: 40px;
+        border-radius: 50%;
+    }
+    &.profile-medium {
+        height: 70px;
+        width: 70px;
+        border-radius: 50%;
+    }
+    &.profile-big {
+        height: 200px;
+        width: 200px;
+        border-radius: 50%;
+    }
+    &.profile-publication {
+        height: 80px;
+        width: 80px;
+    }
+}
