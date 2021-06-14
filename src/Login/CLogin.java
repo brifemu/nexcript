@@ -11,25 +11,33 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 
+
 /**
  * Servlet implementation class Login
  */
 @WebServlet("/login")
 public class CLogin extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
+	HttpSession sesion;
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		HttpSession sesion = request.getSession();
-		Object user = sesion.getAttribute("user");
+		Object user;
+		
+		sesion = request.getSession();
+		user = sesion.getAttribute("user");
+		
 		if(sesion.getAttribute("locale") != null) response.setLocale((Locale)sesion.getAttribute("locale"));
 		if(user == null) request.getRequestDispatcher("WEB-INF/login.jsp").forward(request, response);
 		else {
-			if(user.getClass().getName().equals("Programador.MProgramador")) response.sendRedirect("inicio");
-			else response.sendRedirect("empresa");
+			if(user.getClass().getName().equals("Programador.MProgramador")) {
+				response.sendRedirect("inicio");
+			}
+			else {
+				response.sendRedirect("empresa");
+			}
 		}
 	}
 
@@ -37,7 +45,7 @@ public class CLogin extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doGet(request, response);
+		request.getRequestDispatcher("WEB-INF/beans/login.jsp").forward(request, response);
 	}
 
 }

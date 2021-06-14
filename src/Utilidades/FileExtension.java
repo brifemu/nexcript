@@ -1,8 +1,9 @@
 package Utilidades;
 
-import java.io.File;
 
 public class FileExtension {
+	
+	//Obtenemos la extensión de un archivo
     public String getFileExtension(String name) {
         String extension = "";
         try {

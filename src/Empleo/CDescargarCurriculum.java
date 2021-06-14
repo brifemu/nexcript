@@ -18,15 +18,16 @@ import Programador.MProgramador;
 @WebServlet("/descargarCurriculum")
 public class CDescargarCurriculum extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+	HttpSession sesion;   
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		HttpSession sesion = request.getSession();
-		MProgramador programador = (MProgramador) sesion.getAttribute("user");
+		MProgramador programador;
 		
+		sesion = request.getSession();
+		programador = (MProgramador) sesion.getAttribute("user");
 		// Tells the browser to output
 		response.setContentType ("pdf");
 		// Output image output stream

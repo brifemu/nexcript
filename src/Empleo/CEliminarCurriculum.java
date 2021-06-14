@@ -18,14 +18,16 @@ import Programador.MProgramador;
 @WebServlet("/eliminarCurriculum")
 public class CEliminarCurriculum extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
+	HttpSession sesion;
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		HttpSession sesion = request.getSession();
-		Object user = sesion.getAttribute("user");
+		Object user;
 		MProgramador programador;
+		
+		sesion = request.getSession();
+		user = sesion.getAttribute("user");
 		
 		if(sesion.getAttribute("locale") != null) response.setLocale((Locale)sesion.getAttribute("locale"));
 		

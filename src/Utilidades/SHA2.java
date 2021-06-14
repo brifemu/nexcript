@@ -4,6 +4,8 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 
 public class SHA2 {
+	
+	//Cifra cualquier cadena de texto
 	public String getSHA256(String input) {
 		String toReturn = null;
 		try {

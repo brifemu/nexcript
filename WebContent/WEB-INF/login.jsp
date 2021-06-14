@@ -6,8 +6,10 @@
 
 	Cookie[] cookies = request.getCookies();
 	String mail = "";
-	for(Cookie cookie:cookies){
-		if(cookie.getName().equals("mail")) mail = cookie.getValue();
+	if(cookies != null) {
+		for(Cookie cookie:cookies){
+			if(cookie.getName().equals("mail")) mail = cookie.getValue();
+		}
 	}
 %>
 <!DOCTYPE html>
@@ -20,7 +22,8 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/sass/styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
-    <title>nexcript</title>
+    <title>nexcript > Login</title>
+    <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/src/images/favicon.png"/>
 </head>
 <body style="background-color: black;">
     <video autoplay muted loop id="video" class="login-video">
@@ -34,7 +37,7 @@
             </div>
             <div class="col-md-4 login-form">
                 <h1><%=i18n.getString("login.title") %></h1>
-                <form action="${pageContext.request.contextPath}/beans/login.jsp" method="POST">
+                <form method="POST" action="login">
                 
                   <div class="form-group">
                     <label for="mail"><%=i18n.getString("login.mail.label") %></label>
@@ -87,7 +90,16 @@
 			        <a class="dropdown-item" href="setLocale?lang=de_DE"><span class="flag-icon flag-icon-de"></span> <%=i18n.getString("lang.de") %></a> 
 			       </div>
 				</div>
+				<div class="row pt-5">
+					<div class="footer-copyright text-center ">
+				  		<a class="text-light" href="aviso-legal" target="_blank"><%=i18n.getString("footer.legal") %></a> - 
+				    	<a class="text-light" href="privacidad" target="_blank"><%=i18n.getString("footer.privacy") %></a> - 
+				    	<a class="text-light" href="cookies" target="_blank"><%=i18n.getString("footer.cookies") %></a> - 
+				    	<a class="text-light" href="contacto" target="_blank"><%=i18n.getString("footer.contact") %></a>
+				  	</div>
+				</div>
             </div>
+            
         </div>
     </div>
     <script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script>

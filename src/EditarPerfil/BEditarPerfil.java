@@ -6,6 +6,7 @@ public class BEditarPerfil {
 	String pais;
 	String provincia;
 	String ciudad;
+	String lenguaje;
 	
 	public String getNombre() {
 		return nombre;
@@ -36,6 +37,12 @@ public class BEditarPerfil {
 	}
 	public void setCiudad(String ciudad) {
 		this.ciudad = ciudad;
+	}
+	public String getLenguaje() {
+		return lenguaje;
+	}
+	public void setLenguaje(String lenguaje) {
+		this.lenguaje = lenguaje;
 	}
 	
 }

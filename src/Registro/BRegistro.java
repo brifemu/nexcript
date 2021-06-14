@@ -10,7 +10,15 @@ public class BRegistro {
 	String provincia;
 	String ciudad;
 	String username;
+	String lenguaje;
 	
+	
+	public String getLenguaje() {
+		return lenguaje;
+	}
+	public void setLenguaje(String lenguaje) {
+		this.lenguaje = lenguaje;
+	}
 	public String getRol() {
 		return rol;
 	}

@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
 <%@ page import="Programador.MProgramador" %>
 <%@ page import="java.util.ResourceBundle" %>
+<%@ page import="java.text.SimpleDateFormat" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,12 +13,31 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/sass/styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
-    <title>nexcript</title>
+    <title>nexcript > Empleo</title>
+    <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/src/images/favicon.png">
     <%
     	ResourceBundle i18n = ResourceBundle.getBundle("i18n.i18n", response.getLocale());
     	MProgramador user = (MProgramador) session.getAttribute("user");
     	byte[] cv = user.getCurriculum();
+    	String formatFecha;
     %>
+    <script>
+	    function comprobarInsert() {
+			if(document.getElementById("cv").files[0].size > 5000000){
+				alert('El archivo no debe superar los 5MB');
+				document.getElementById("cv").value = '';
+				document.getElementById("cv").name = '';
+			} 
+		};
+		
+		function comprobarUpdate() {
+			if(document.getElementById("cvv").files[0].size > 5000000){
+				alert('El archivo no debe superar los 5MB');
+				document.getElementById("cvv").value = '';
+				document.getElementById("cvv").name = '';
+			} 
+		};
+    </script>
 </head>
 <body>
 	<nav class="navbar navbar-expand-lg sticky-top">
@@ -40,9 +60,6 @@
             </li>
             <li class="nav-item mr-4 active">
               <a class="nav-link" href="empleo"><i class="bi bi-briefcase-fill"></i> <%=i18n.getString("nav.job") %></a>
-            </li>
-            <li class="nav-item mr-4">
-              <a class="nav-link" href="contacto"><i class="bi bi-mailbox2"></i> <%=i18n.getString("nav.contact") %></a>
             </li>
           </ul>
           <li class="nav dropdown">
@@ -84,7 +101,7 @@
             </div>
           </li>
 
-          <form method="post" action ="${pageContext.request.contextPath}/beans/barra-busqueda.jsp">
+          <form method="post" action ="busqueda">
             <div class="input-group">
               <input type="text" class="input-ol form-control" name="busqueda" placeholder="<%=i18n.getString("searchbox.placeholder") %>" required/>
               <span class="input-group-btn">
@@ -101,28 +118,29 @@
         	<div class="col-md-4">
         		<img src="${pageContext.request.contextPath}/src/images/empleo.webp" class="img-fluid"/>
         	</div>
-        	<div class="col-md-8 text-light p-5 bg-secondary">
+        	<div class="col-md-8 text-muted p-5">
         	<% if(cv == null) { %>
-        		 <h1><%=i18n.getString("job.title") %></h1>
+        		 <h1 class="text-primary"><%=i18n.getString("job.title") %></h1>
 		         <p><%=i18n.getString("job.p1") %></p>
 		         <p><%=i18n.getString("job.p2") %></p>
 
-		         <form method="post" action="${pageContext.request.contextPath}/beans/subirCurriculum.jsp" enctype="multipart/form-data">
-		         	<input type="file" name="cv" accept="application/pdf" required>
-		         	<button class="form-control btn-dark mt-4" type="submit"><i class="bi bi-file-earmark-arrow-up"></i> <%=i18n.getString("job.button.upload") %></button>  
+		         <form method="post" action="subir-curriculum" enctype="multipart/form-data">
+		         	<input type="file" id="cv" onchange="comprobarInsert();" name="cv" accept="application/pdf" required>
+		         	<button class="form-control btn-primary mt-4" type="submit"><i class="bi bi-file-earmark-arrow-up"></i> <%=i18n.getString("job.button.upload") %></button>  
 		         </form>
 		    <%
 		      } else {
+		    	  formatFecha = new SimpleDateFormat("dd/MM/yyyy - HH:mm").format(user.getFechaCurriculum());
 		    %> 
-		    	<h1><%=i18n.getString("job.title") %></h1>
-		         <p><%=i18n.getString("job.uploaded.p1") %> <%=user.getFechaCurriculum() %></p>
+		    	<h1 class="text-primary"><%=i18n.getString("job.title") %></h1>
+		         <p><%=i18n.getString("job.uploaded.p1") %> <i class="bi bi-clock-history"></i> <%=formatFecha %></p>
 		         <p><%=i18n.getString("job.uploaded.p2") %></p>
 		         
-		         <form method="post" action="${pageContext.request.contextPath}/beans/subirCurriculum.jsp" enctype="multipart/form-data">
-		         	<input type="file" name="cv" accept="application/pdf" required>
-		         	<button class="form-control btn-dark mt-4" type="submit"><i class="bi bi-file-earmark-break"></i> <%=i18n.getString("job.button.update") %></button>
-		         	<a class="form-control btn-dark mt-4 text-center" href="descargarCurriculum" target="_blank"><i class="bi bi-file-earmark-arrow-down"></i> <%=i18n.getString("job.button.download") %></a>
-		         	<a class="form-control btn-dark mt-4 text-center" href="eliminarCurriculum"><i class="bi bi-file-earmark-x"></i> <%=i18n.getString("job.button.delete") %></a>  
+		         <form method="post" action="subir-curriculum" enctype="multipart/form-data">
+		         	<input type="file" id="cvv" onchange="comprobarUpdate();" name="cv" accept="application/pdf" required>
+		         	<button class="form-control btn-success mt-4" type="submit"><i class="bi bi-file-earmark-break"></i> <%=i18n.getString("job.button.update") %></button>
+		         	<a class="form-control btn-primary mt-4 text-center" href="descargarCurriculum" target="_blank"><i class="bi bi-file-earmark-arrow-down"></i> <%=i18n.getString("job.button.download") %></a>
+		         	<a class="form-control btn-danger mt-4 text-center" href="eliminarCurriculum"><i class="bi bi-file-earmark-x"></i> <%=i18n.getString("job.button.delete") %></a>  
 		         </form>
 		    <%
 		      } 
@@ -137,41 +155,7 @@
            }
         %>
     </div>
-    <footer class="page-footer font-small bg-light  text-muted pt-3">
-	  <div class="container">
-	    <ul class="list-unstyled list-inline text-center">
-	      <li class="list-inline-item">
-	        <a class="btn-floating btn-fb text-muted mx-1" href="https://www.instagram.com/brifemu" target="_blank">
-	          <i class="fab fa-instagram"> </i>
-	        </a>
-	      </li>
-	      <li class="list-inline-item">
-	        <a class="btn-floating btn-tw text-muted mx-1" href="https://twitter.com/brifemu" target="_blank">
-	          <i class="fab fa-twitter"> </i>
-	        </a>
-	      </li>
-	      <li class="list-inline-item">
-	        <a class="btn-floating btn-li mx-1 text-muted" href="https://www.linkedin.com/in/brifemu" target="_blank">
-	          <i class="fab fa-linkedin-in"> </i>
-	        </a>
-	      </li>
-	      <li class="list-inline-item">
-	        <a class="btn-floating btn-dribbble text-muted mx-1" href="https://github.com/brifemu" target="_blank">
-	          <i class="fab fa-github"> </i>
-	        </a>
-	      </li>
-	    </ul>
-	  </div>
-	  <div class="footer-copyright text-center">
-	  	<a class="text-muted" href="aviso-legal" target="_blank">Aviso Legal</a> - 
-	    <a class="text-muted" href="privacidad" target="_blank">Política de privacidad</a> - 
-	    <a class="text-muted" href="cookies" target="_blank">Política de cookies</a> - 
-	    <a class="text-muted" href="contacto">Contacto</a>
-	  </div>
-	  <div class="footer-copyright text-center py-3">© 2021 Copyright
-	    <a class="text-muted" href="https://www.linkedin.com/in/brifemu" target="_blank"> nexcript</a>
-	  </div>
-	</footer>
+    <jsp:include page="footer.jsp"></jsp:include>
 	<script src="https://kit.fontawesome.com/5d273a2576.js" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>

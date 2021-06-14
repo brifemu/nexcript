@@ -16,16 +16,21 @@ import javax.servlet.http.HttpSession;
 @WebServlet("/setLocale")
 public class CSetLocale extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+	HttpSession sesion;
+	
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		HttpSession sesion = request.getSession();
-		String lang = request.getParameter("lang");
+		
+		String lang;
 		String[] validLangs = {"es_ES","en_US","fr_FR","de_DE"};
-		boolean validLang = false;
+		boolean validLang;
 		Locale locale;
+		
+		sesion = request.getSession();
+		lang = request.getParameter("lang");
+		validLang = false;
 		
 		for(String lg: validLangs) {
 			if(lang.equals(lg)) validLang = true;

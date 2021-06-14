@@ -79,4 +79,53 @@ public class Correo {
    		}
    	}
    	
+   	public void correoContacto(String empresa, String mail, String nombre, String mensaje) {
+   		to = empresa;
+   		asunto = "nexcript - Formulario de contacto";
+   		mensaje = "De: "+mail+"\n"
+   				+ "Nombre: "+nombre+"\n"
+   				+ "Mensaje:\n"+mensaje;
+
+   		try {
+   			sf = new MailSSLSocketFactory();
+   	    	sf.setTrustAllHosts(true);
+   	        // Añadir datos del servidor
+   	        properties.put("mail.smtp.host", host);
+   	        properties.put("mail.smtp.port", port);
+   	        properties.put("mail.smtp.ssl.enable", "true");
+   	        properties.put("mail.smtp.auth", "true");
+   			properties.put("mail.smtp.ssl.socketFactory", sf);
+   	        
+   		
+   	        // Instanciar una sesión de correo y añadir usuario y contraseña
+   	        Session session = Session.getInstance(properties, 
+   			new javax.mail.Authenticator() {
+   	        	protected PasswordAuthentication getPasswordAuthentication() {
+   	        		return new PasswordAuthentication(from, clave);
+   				}
+   	        });
+   		    // Activar depuración
+   		    session.setDebug(false);
+
+   	 	    // Crear un objeto MimeMessage por defecto.
+   		    Mimessage = new MimeMessage(session);
+
+   	        // Asignar campo 'De:' al encabezado del correo
+   	        Mimessage.setFrom(new InternetAddress(from));
+   	        // Asignar campo 'Para:' al encabezado del correo
+   	        Mimessage.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
+   	        // Asignar campo 'Asunto:' al encabezado del correo
+   	        Mimessage.setSubject(asunto);
+   	        // Asignar el mensaje en sí
+   	        Mimessage.setText(mensaje);
+   	        // Enviar el mensaje
+   	        Transport.send(Mimessage);
+   		} catch (MessagingException mex) {
+   			mex.printStackTrace();
+   		}
+   		catch (GeneralSecurityException gse) {
+   			gse.printStackTrace();
+   		}
+   	}
+   	
 }

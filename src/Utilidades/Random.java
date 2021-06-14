@@ -4,6 +4,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Random {
 
+	//Generamos una cadena de caracteres aleatoria de la longitud que indiquemos
 	public String cadena(int longitud) {
         // El banco de caracteres
         String banco = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
@@ -17,6 +18,7 @@ public class Random {
         return cadena;
     }
 	
+	//Generamos un número aleatorio entre dos números (ambos enteros)
 	public int numero(int minimo, int maximo) {
         // nextInt regresa en rango pero con límite superior exclusivo, por eso sumamos 1
         return ThreadLocalRandom.current().nextInt(minimo, maximo + 1);

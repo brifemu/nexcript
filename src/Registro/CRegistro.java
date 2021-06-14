@@ -10,19 +10,28 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import Codigo.MLenguaje;
+
 /**
  * Servlet implementation class CRegistro
  */
 @WebServlet("/registro")
 public class CRegistro extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
+	HttpSession sesion;
+	MLenguaje[] arrLenguajes;
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		HttpSession sesion = request.getSession();
-		Object user = sesion.getAttribute("user");
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {		
+		Object user;
+		
+		sesion = request.getSession();
+		user = sesion.getAttribute("user");
+		if(arrLenguajes == null) {
+			MLenguaje leng = new MLenguaje();
+			arrLenguajes=leng.listaLenguajes();
+		}
 		
 		if(sesion.getAttribute("locale") != null) {
     		response.setLocale((Locale)sesion.getAttribute("locale"));
@@ -32,15 +41,17 @@ public class CRegistro extends HttpServlet {
 			if(user.getClass().getName().equals("Programador.MProgramador")) response.sendRedirect("inicio");
 			else response.sendRedirect("empresa");
 		}
-		else request.getRequestDispatcher("WEB-INF/registro.jsp").forward(request, response);
+		else {
+			sesion.setAttribute("listaLenguajes", arrLenguajes);
+			request.getRequestDispatcher("WEB-INF/registro.jsp").forward(request, response);
+		}
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
+		request.getRequestDispatcher("WEB-INF/beans/registro.jsp").forward(request, response);
 	}
 
 }

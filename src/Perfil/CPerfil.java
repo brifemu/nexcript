@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import Bloqueo.MBloqueo;
+import Codigo.MAportacion;
 import Programador.MProgramador;
 import Publicacion.MPublicacion;
 
@@ -20,18 +22,49 @@ import Publicacion.MPublicacion;
 @WebServlet("/perfil")
 public class CPerfil extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+	HttpSession sesion;
+	
+	final int MAX_PUBLICACIONES = 10;
+	final int MAX_APORTES = 10;
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		HttpSession sesion = request.getSession();
-		Object user = sesion.getAttribute("user");
+		
+		Object user;
 		MPublicacion publicacion;
+		MAportacion aportacion;
 		MProgramador programador;
-		int pagina = 1;
+		MProgramador perfil;
+		MBloqueo bloqueo;
 		String username;
-		int[] resultado;
+		boolean existeBloqueo;
+		boolean bloqueoActivo;
+		
+		MPublicacion[] publicaciones;
+		
+		MAportacion[] aportaciones;
+
+		int[] likes;
+		int[] respuestas;
+		boolean[] likeado;
+		
+
+		
+		sesion = request.getSession();
+		user = sesion.getAttribute("user");
+		
+
+		bloqueoActivo = false;
+		programador = (MProgramador) user;
+		bloqueo = new MBloqueo();
+		publicaciones = new MPublicacion[MAX_PUBLICACIONES];
+		likes = new int[MAX_PUBLICACIONES];
+		respuestas = new int[MAX_PUBLICACIONES];
+		likeado = new boolean[MAX_PUBLICACIONES];
+				
+		aportaciones = new MAportacion[MAX_APORTES];
+
 		
 		if(sesion.getAttribute("locale") != null) response.setLocale((Locale) sesion.getAttribute("locale"));
 		ResourceBundle i18n = ResourceBundle.getBundle("i18n.i18n", response.getLocale());
@@ -39,22 +72,60 @@ public class CPerfil extends HttpServlet {
 		if(user == null) response.sendRedirect("login");
 		else {
 			if(user.getClass().getName().equals("Programador.MProgramador")) {
+
 				username = request.getParameter("p");
-				programador = (MProgramador) sesion.getAttribute("user");
-				if(programador.leer("username", username)) {
-					publicacion = new MPublicacion();
-			    	if(sesion.getAttribute("paginaPublicaciones") == null) pagina = 1;
-			   		else pagina = Integer.parseInt((String)sesion.getAttribute("paginaPublicaciones"));
-			   		if( pagina <= 0) pagina = 1;	
+				perfil = new MProgramador();
+				if(perfil.leer("username", username)) {
+					
+					//SETEA EL PERFIL QUE VAMOS A VER
+					sesion.setAttribute("perfil.data", perfil);
+					
+					
+					//COMPROBAMOS SI LO TENEMOS BLOQUEADO
+					existeBloqueo = bloqueo.leer(programador.getId(), perfil.getId());
+					if(existeBloqueo) bloqueoActivo = bloqueo.isActivo();
+					sesion.setAttribute("perfil.user.bloqueado", bloqueoActivo);
+					
+					
+					//Limpiamos la variable que vamos a reutilizar
+					bloqueoActivo = false;
+					
+					
+					//COMPROBAMOS SI EL USUARIO NOS TIENE BLOQUEADO
+					existeBloqueo = bloqueo.leer(perfil.getId(), programador.getId());
+					if(existeBloqueo) bloqueoActivo = bloqueo.isActivo();
+					sesion.setAttribute("perfil.bloqueado", bloqueoActivo);
+					
+					
+				   	// CARGA PUBLICACIONES
+				   	publicacion = new MPublicacion();				   	
+				   	publicaciones = publicacion.realizarBusqueda(perfil.getId(), 1, MAX_PUBLICACIONES);
+				   	sesion.setAttribute("perfil.publicaciones", publicaciones);
 				   	
-				   	resultado = publicacion.realizarBusqueda(programador.getId(), pagina, 20);
-				   	sesion.setAttribute("busqPublicaciones", resultado);
+				   	
+				   	int ii = 0;
+				   	while(publicaciones[ii] != null) {
+						likes[ii] = publicaciones[ii].getLikes();
+						respuestas[ii] = publicaciones[ii].getRespuestas();
+						likeado[ii] = publicaciones[ii].likeado(programador.getId());
+						ii++;
+				   	}
+				   	sesion.setAttribute("perfil.publicaciones.likes", likes);
+				   	sesion.setAttribute("perfil.publicaciones.likes.propios", likeado);
+				   	sesion.setAttribute("perfil.publicaciones.respuestas", respuestas);
+				   	
+				   	
+				   	// CARGA APORTACIONES
+				   	aportacion = new MAportacion();				   	
+				   	aportaciones = aportacion.realizarBusqueda(perfil.getId(), 1, MAX_APORTES);
+				   	sesion.setAttribute("perfil.aportaciones", aportaciones);				  
+
+				   	
 		    	} else  sesion.setAttribute("error-perfil", i18n.getString("profile.none"));
 				request.getRequestDispatcher("WEB-INF/perfil.jsp").forward(request, response);
 			}
 			else response.sendRedirect("empresa");
 		}
-		
 	}
 
 	/**
@@ -64,5 +135,4 @@ public class CPerfil extends HttpServlet {
 		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
-
 }

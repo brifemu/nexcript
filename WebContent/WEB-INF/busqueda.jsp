@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="et" uri="etiquetas.tld"%>
 <%@ page import="Programador.MProgramador" %>
 <%@ page import="java.util.ResourceBundle" %>
 
@@ -13,37 +14,28 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/sass/styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
-    <title>nexcript</title>
+    <title>nexcript > Búsqueda</title>
+    <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/src/images/favicon.png">
     <%
     	ResourceBundle i18n = ResourceBundle.getBundle("i18n.i18n", response.getLocale());
     
     	MProgramador user = (MProgramador) session.getAttribute("user");
-    	MProgramador res;
-    	int lista = 0;
-    	int resultados = 0;
     	String activo = "";
     	
     	int paginas = 0;
 		int resultadosTotales = 0;
-    	int[] resultado = null;
+		int resultadosConsulta = 0;
+    	MProgramador[] resultado = null;
     	
     	int pagina = Integer.parseInt(request.getParameter("p"));
-    	if(session.getAttribute("resultadoBusqueda") != null){
-    		paginas = (int) session.getAttribute("paginasBusqueda");
-    		resultadosTotales = (int) session.getAttribute("resultadosBusqueda");
-        	resultado = (int[]) session.getAttribute("resultadoBusqueda");
+    	resultado = (MProgramador[]) session.getAttribute("busqueda.data");
+    	if(resultado != null){
+    		paginas = (int) session.getAttribute("busqueda.paginas");
+    		resultadosTotales = (int) session.getAttribute("busqueda.resultados.totales");
+    		resultadosConsulta = (int) session.getAttribute("busqueda.resultados.consulta");
     	}
 		
-    	String busqueda = request.getParameter("q");
-    	
-    	if(resultado == null) lista = 0;
-    	else lista = resultado.length;
-    	
-    	for(int i = 0; i < lista; i++){
-    		if(resultado[i] != 0) resultados++;
-    	}
-    	
-		
+    	String busqueda = request.getParameter("q");	
 		
     %>
 </head>
@@ -60,7 +52,7 @@
       
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav mr-auto">
-            <li class="nav-item mr-4 active">
+            <li class="nav-item mr-4">
               <a class="nav-link" href="perfil?p=<%= user.getUsername()%>"><i class="bi bi-person-badge-fill"></i> <%=i18n.getString("nav.profile") %></a>
             </li>
             <li class="nav-item mr-4">
@@ -68,9 +60,6 @@
             </li>
             <li class="nav-item mr-4">
               <a class="nav-link" href="empleo"><i class="bi bi-briefcase-fill"></i> <%=i18n.getString("nav.job") %></a>
-            </li>
-            <li class="nav-item mr-4">
-              <a class="nav-link" href="contacto"><i class="bi bi-mailbox2"></i> <%=i18n.getString("nav.contact") %></a>
             </li>
           </ul>
           <li class="nav dropdown">
@@ -112,7 +101,7 @@
             </div>
           </li>
 
-          <form method="post" action ="${pageContext.request.contextPath}/beans/barra-busqueda.jsp">
+          <form method="post" action ="busqueda">
             <div class="input-group">
               <input type="text" class="input-ol form-control" name="busqueda" placeholder="<%=i18n.getString("searchbox.placeholder") %>" required/>
               <span class="input-group-btn">
@@ -127,12 +116,15 @@
 	<div class="container">
 		<div class="row d-flex flex-column mt-4">
 			<h1 class="text-primary"><i class="bi bi-keyboard"></i> <%=i18n.getString("searchresult.title") %></h1>
-			<small class="text-muted"><%=i18n.getString("searchresult.showing") %> <%=resultados %> <%=i18n.getString("searchresult.of") %> <%=resultadosTotales %> <%=i18n.getString("searchresult.found") %> «<%=busqueda%>»</small>
+			<small class="text-muted"><%=i18n.getString("searchresult.showing") %> <%=resultadosConsulta %> <%=i18n.getString("searchresult.of") %> <%=resultadosTotales %> <%=i18n.getString("searchresult.found") %> «<%=busqueda%>»</small>
 		</div>
 		
 	<%
+	if(session.getAttribute("error") == null)
+	{
 		if(paginas > 1) {
 	%>
+		<form action="busqueda" method="post">
 		<div class="row mt-3">
 			<nav aria-label="Navegación de búsqueda">
 			  <ul class="pagination">
@@ -141,7 +133,7 @@
 			    %>
 			    <li class="page-item <%= activo%>">
 			    
-			      <a class="page-link" href="<%= pagina > 1 ? "beans/barra-busqueda.jsp?q="+busqueda+"&p="+(pagina-1) : "" %>" aria-label="<%=i18n.getString("searchresult.label.back") %>">
+			      <a type="submit" class="page-link" href="<%= pagina > 1 ? "busqueda?q="+busqueda+"&p="+(pagina-1) : "" %>" aria-label="<%=i18n.getString("searchresult.label.back") %>">
 			        <span aria-hidden="true">&laquo;</span>
 			        <span class="sr-only"><%=i18n.getString("searchresult.label.back") %></span>
 			      </a>
@@ -150,7 +142,7 @@
 			    	for(int i = 1; i <= paginas; i++) {
 			    		activo = pagina == i ? "active" : "";
 			    %>
-			    		<li class="page-item <%=activo %>"><a class="page-link" href="beans/barra-busqueda.jsp?q=<%=busqueda%>&p=<%=i %>"><%=i %></a></li>
+			    		<li class="page-item <%=activo %>"><a class="page-link" href="busqueda?q=<%=busqueda%>&p=<%=i %>"><%=i %></a></li>
 			    <%
 			    	}
 			    %>
@@ -158,7 +150,7 @@
 			    	activo = pagina < paginas ? "" : "disabled";
 			    %>
 			    <li class="page-item <%= activo%>">
-			      <a class="page-link" href="<%= pagina < paginas ? "beans/barra-busqueda.jsp?q="+busqueda+"&p="+(pagina+1) : "" %>" aria-label="<%=i18n.getString("searchresult.label.next") %>">
+			      <a type="submit" class="page-link" href="<%= pagina < paginas ? "busqueda?q="+busqueda+"&p="+(pagina+1) : "" %>" aria-label="<%=i18n.getString("searchresult.label.next") %>">
 			        <span aria-hidden="true">&raquo;</span>
 			        <span class="sr-only"><%=i18n.getString("searchresult.label.next") %></span>
 			      </a>
@@ -166,65 +158,31 @@
 			  </ul>
 			</nav>
 		</div>
+		</form>
 	<%  } %>
 		<div class="row mt-3">
-		<%	if(resultados > 0){
-				res = new MProgramador();
-
-				for(int i = 0; i < resultados; i++) { 
-					res.leer("id", resultado[i]);
+		<%	if(resultadosConsulta > 0){
+				for(int i = 0; i < resultado.length; i++) { 
+					if(resultado[i] != null){
 		%>
-		    		<div class="card col-md-3" onclick="location.href='perfil?p=<%=res.getUsername() %>'">	
-		    		  <% if(res.getFoto() != null) {%> <img class="profile-big ml-auto mr-auto" src="ImagenProgramador?id=<%=res.getId() %>" alt="<%=i18n.getString("img.profile.alt") %>"/>
-		        	  <% } else {%><img class="profile-big ml-auto mr-auto" src="${pageContext.request.contextPath}/src/images/profile.webp" alt="<%=i18n.getString("img.profile.alt") %>"/>
-		        	  <% } %>  	  
-					  <div class="card-body d-flex flex-column">
-					  	<a class="card-text ml-auto mr-auto">@<%=res.getUsername() %></a>
-					    <a class="h4 card-title ml-auto mr-auto text-center"><%=res.getNombre() %></a>   
-					  </div>
-					</div>
-		<%     	}
+						<et:TarjetaPerfil id="<%=resultado[i].getId() %>"/>
+			    		
+		<%			}     
+				}
 			} else { %>
 				<div class="alert alert-danger mt-3 w-100" role="alert">
 				  <%=i18n.getString("searchresult.error.notfound") %>
 				</div>
-		<%	}	%>
+	<%		}
+	} else {
+         if(session.getAttribute("error") != null) {%>
+           	<div class="alert alert-danger mt-3" role="alert"><%= (String) session.getAttribute("error") %></div>
+    <%
+            session.setAttribute("error", null);
+         }               
+	}%>
 	</div>
-	<footer class="page-footer font-small bg-light  text-muted pt-3">
-	  <div class="container">
-	    <ul class="list-unstyled list-inline text-center">
-	      <li class="list-inline-item">
-	        <a class="btn-floating btn-fb text-muted mx-1" href="https://www.instagram.com/brifemu" target="_blank">
-	          <i class="fab fa-instagram"> </i>
-	        </a>
-	      </li>
-	      <li class="list-inline-item">
-	        <a class="btn-floating btn-tw text-muted mx-1" href="https://twitter.com/brifemu" target="_blank">
-	          <i class="fab fa-twitter"> </i>
-	        </a>
-	      </li>
-	      <li class="list-inline-item">
-	        <a class="btn-floating btn-li mx-1 text-muted" href="https://www.linkedin.com/in/brifemu" target="_blank">
-	          <i class="fab fa-linkedin-in"> </i>
-	        </a>
-	      </li>
-	      <li class="list-inline-item">
-	        <a class="btn-floating btn-dribbble text-muted mx-1" href="https://github.com/brifemu" target="_blank">
-	          <i class="fab fa-github"> </i>
-	        </a>
-	      </li>
-	    </ul>
-	  </div>
-	  <div class="footer-copyright text-center">
-	  	<a class="text-muted" href="aviso-legal" target="_blank">Aviso Legal</a> - 
-	    <a class="text-muted" href="privacidad" target="_blank">Política de privacidad</a> - 
-	    <a class="text-muted" href="cookies" target="_blank">Política de cookies</a> - 
-	    <a class="text-muted" href="contacto">Contacto</a>
-	  </div>
-	  <div class="footer-copyright text-center py-3">© 2021 Copyright
-	    <a class="text-muted" href="https://www.linkedin.com/in/brifemu" target="_blank"> nexcript</a>
-	  </div>
-	</footer>
+	<jsp:include page="footer.jsp"></jsp:include>
 	<script src="https://kit.fontawesome.com/5d273a2576.js" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>

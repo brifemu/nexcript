@@ -1,10 +1,13 @@
 package Empresa;
 
+import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Date;
 
 import Usuario.MUsuario;
+import Utilidades.Convertidor;
 
 public class MEmpresa extends MUsuario{
 	public MEmpresa() {
@@ -43,8 +46,41 @@ public class MEmpresa extends MUsuario{
 		}
 		return existe;
 	}
+	
+	public boolean leer(String campo, int valor) {
+		boolean existe = false;
+		con = conexion.crearConexion();
+		String query = "SELECT * from empresa WHERE "+campo+" = ?";
+		try {
+			ps = con.prepareStatement(query);
+			ps.setInt(1,valor);
+			rs = ps.executeQuery();
+			if(rs.next()){
+				id = rs.getInt("id");
+				mail = rs.getString("mail");
+				password = rs.getString("password");
+				fechaRegistro = rs.getTimestamp("registro");
+				ultimaConexion = rs.getTimestamp("ultimaconexion");
+				nombre = rs.getString("nombre");
+				foto = rs.getBytes("foto");
+				pais = rs.getString("pais");
+				provincia = rs.getString("provincia");
+				ciudad = rs.getString("ciudad");
+				confirmado = rs.getBoolean("confirmado");
+				fechaConfirmacion = rs.getTimestamp("fechaconfirmacion");
+				existe = true;
+		    } 
+			rs.close();
+			ps.close();
+			con.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return existe;
+	}
 
-	public boolean insertar(String mail, String password, String nombre, /*byte[] foto,*/ String pais, String provincia, String ciudad) {
+	public boolean insertar(String mail, String password, String nombre, /*byte[] foto,*/ String pais, String provincia, String ciudad, byte[] foto) {
 		boolean resultado = false;
 		Timestamp fecha = new Timestamp(System.currentTimeMillis());
 		con = conexion.crearConexion();
@@ -57,7 +93,8 @@ public class MEmpresa extends MUsuario{
 		this.pais = pais;
 		this.provincia = provincia;
 		this.ciudad = ciudad;
-		String query = "INSERT INTO empresa (mail, password, registro, ultimaconexion, nombre, pais, provincia, ciudad) VALUES (?,?,?,?,?,?,?,?)";
+		this.foto = foto;
+		String query = "INSERT INTO empresa (mail, password, registro, ultimaconexion, nombre, pais, provincia, ciudad, foto) VALUES (?,?,?,?,?,?,?,?,?)";
 		try {
 			PreparedStatement ps = con.prepareStatement(query);
 			ps.setString(1,mail);
@@ -68,11 +105,7 @@ public class MEmpresa extends MUsuario{
 			ps.setString(6,pais);
 			ps.setString(7,provincia);
 			ps.setString(8,ciudad);
-
-			/*ps.setBytes(6, foto);
-			ps.setString(7,pais);
-			ps.setString(8,provincia);
-			ps.setString(9,ciudad);*/
+			ps.setBytes(9,foto);
 			ps.execute();
 			ps.close();
 			con.close();
@@ -81,5 +114,101 @@ public class MEmpresa extends MUsuario{
 			e.printStackTrace();
 		}
 		return resultado;
+	}
+	
+	public boolean update(String campo, String valor) {
+		boolean resultado = false;
+		con = conexion.crearConexion();
+		String query = "UPDATE empresa SET "+campo+" = ? WHERE id = "+id;
+		try {
+			ps = con.prepareStatement(query);
+			ps.setString(1,valor);
+			ps.executeUpdate();
+			rs.close();
+			ps.close();
+			con.close();
+			resultado = true;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return resultado;
+	}
+	
+	public boolean update(String campo, boolean valor) {
+		boolean resultado = false;
+		con = conexion.crearConexion();
+		String query = "UPDATE empresa SET "+campo+" = ? WHERE id = "+id;
+		try {
+			ps = con.prepareStatement(query);
+			ps.setBoolean(1,valor);
+			ps.executeUpdate();
+			rs.close();
+			ps.close();
+			con.close();
+			resultado = true;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return resultado;
+	}
+	
+	public boolean update(String campo, Timestamp valor) {
+		boolean resultado = false;
+		con = conexion.crearConexion();
+		String query = "UPDATE empresa SET "+campo+" = ? WHERE id = "+id;
+		try {
+			ps = con.prepareStatement(query);
+			ps.setTimestamp(1,valor);
+			ps.executeUpdate();
+			rs.close();
+			ps.close();
+			con.close();
+			resultado = true;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return resultado;
+	}
+	
+	public boolean update(String campo, File file) {
+		Convertidor cc = new Convertidor();
+		boolean resultado = false;
+		byte[] convertido = cc.convertFileToByteArray(file);
+		con = conexion.crearConexion();
+		String query = "UPDATE empresa SET "+campo+" = ? WHERE id = "+id;
+		try {
+			ps = con.prepareStatement(query);
+			ps.setBytes(1,convertido);
+			ps.executeUpdate();
+			rs.close();
+			ps.close();
+			con.close();
+			resultado = true;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return resultado;
+	}
+	
+	public void logConexion(String ip) {
+		con = conexion.crearConexion();
+		Date today = new Date();
+		Timestamp fecha = new Timestamp(today.getTime());
+		String query = "INSERT INTO log_login (usuario, fecha, ip, tipo) VALUES (?,?,?,'E')";
+		try {
+			PreparedStatement ps = con.prepareStatement(query);
+			ps.setInt(1,id);
+			ps.setTimestamp(2,fecha);
+			ps.setString(3,ip);
+			ps.execute();
+			ps.close();
+			con.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 }

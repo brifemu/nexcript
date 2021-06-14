@@ -2,6 +2,7 @@
 
 .btn-primary {
     background-color: $primary;
+    border-color: $primary;
     color: $white;
     &:hover {
         background-color: $secondary;
@@ -10,8 +11,31 @@
 
 .btn-light {
     background-color: $white;
+    border-color: $secondary
 }
 
 .btn-dark {
     background-color: $primary_dark;
+    border-color: $primary_dark;
+}
+
+.btn-danger {
+    background-color: $alert;
+    border-color: $alert;
+}
+
+.btn-success {
+    background-color: $success;
+    border-color: $success;
+}
+
+.btn-like {
+    background-color: $like;
+    border-color: $like;
+    color: $white;
+    &:hover {
+        background-color: $like_hover;
+        border-color: $like_hover;
+        color: $white;
+    }
 }

@@ -9,7 +9,8 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/bootstrap.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/sass/styles.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
-    <title>nexcript</title>
+    <title>nexcript > Aviso Legal</title>
+    <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/src/images/favicon.png">
 </head>
 <body>
 	<div class="container">
@@ -65,41 +66,7 @@
 			</div>
 		</div>
 	</div>
-	<footer class="page-footer font-small bg-light  text-muted pt-3">
-	  <div class="container">
-	    <ul class="list-unstyled list-inline text-center">
-	      <li class="list-inline-item">
-	        <a class="btn-floating btn-fb text-muted mx-1" href="https://www.instagram.com/brifemu" target="_blank">
-	          <i class="fab fa-instagram"> </i>
-	        </a>
-	      </li>
-	      <li class="list-inline-item">
-	        <a class="btn-floating btn-tw text-muted mx-1" href="https://twitter.com/brifemu" target="_blank">
-	          <i class="fab fa-twitter"> </i>
-	        </a>
-	      </li>
-	      <li class="list-inline-item">
-	        <a class="btn-floating btn-li mx-1 text-muted" href="https://www.linkedin.com/in/brifemu" target="_blank">
-	          <i class="fab fa-linkedin-in"> </i>
-	        </a>
-	      </li>
-	      <li class="list-inline-item">
-	        <a class="btn-floating btn-dribbble text-muted mx-1" href="https://github.com/brifemu" target="_blank">
-	          <i class="fab fa-github"> </i>
-	        </a>
-	      </li>
-	    </ul>
-	  </div>
-	  <div class="footer-copyright text-center">
-	  	<a class="text-muted" href="aviso-legal">Aviso Legal</a> - 
-	    <a class="text-muted" href="privacidad">Política de privacidad</a> - 
-	    <a class="text-muted" href="cookies">Política de cookies</a> - 
-	    <a class="text-muted" href="contacto">Contacto</a>
-	  </div>
-	  <div class="footer-copyright text-center py-3">© 2021 Copyright
-	    <a class="text-muted" href="https://www.linkedin.com/in/brifemu" target="_blank"> nexcript</a>
-	  </div>
-	</footer>
+	<jsp:include page="footer.jsp"></jsp:include>
 	<script src="https://kit.fontawesome.com/5d273a2576.js" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>

@@ -1,7 +1,6 @@
 package Logout;
 
 import java.io.IOException;
-import java.util.Locale;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,15 +15,12 @@ import javax.servlet.http.HttpSession;
 @WebServlet("/logout")
 public class CLogout extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-      
+	HttpSession sesion;  
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		HttpSession sesion = request.getSession();
-		if(sesion.getAttribute("locale") != null) {
-    		response.setLocale((Locale)sesion.getAttribute("locale"));
-    	}
+		sesion = request.getSession();
 		sesion.invalidate();
 		response.sendRedirect("login");
 	}

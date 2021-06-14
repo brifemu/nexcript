@@ -7,11 +7,11 @@ import java.io.IOException;
 public class Convertidor {
 	public byte[] convertFileToByteArray(File file){
 	    FileInputStream fis = null;
-	    // Creating bytearray of same length as file
+	    // Crea un array de la longitud de bytes del archivo
 	    byte[] bArray = new byte[(int) file.length()];
 	    try{
 	      fis = new FileInputStream(file);
-	      // Reading file content to byte array
+	      //Lee el archivo e inserta los bytes en el array
 	      fis.read(bArray);
 	      fis.close();                    
 	    }catch(IOException ioExp){

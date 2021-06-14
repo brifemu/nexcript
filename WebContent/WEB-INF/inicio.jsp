@@ -1,9 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-
 <!DOCTYPE html>
 <%@ page import="Programador.MProgramador" %>
+<%@ page import="Codigo.MAportacion" %>
 <%@ page import="java.util.ResourceBundle" %>
+<%@ page import="java.text.SimpleDateFormat" %>
 <html>
 <head>
 	<meta charset="UTF-8">
@@ -13,10 +14,19 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/sass/styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
-    <title>nexcript</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.11.0/devicon.min.css">
+    <title>nexcript > Inicio</title>
+    <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/src/images/favicon.png">
     <%
     	MProgramador user = (MProgramador) session.getAttribute("user");
     	ResourceBundle i18n = ResourceBundle.getBundle("i18n.i18n", response.getLocale());
+
+    	MAportacion[] aportaciones = (MAportacion[]) session.getAttribute("inicio.aportaciones");
+    	String formatFecha;
+    	int nAportaciones = 0;
+    	for(int i = 0; i < aportaciones.length; i++){
+    		if(aportaciones[i] != null) nAportaciones++;
+    	}
     %>
 </head>
 <body>
@@ -41,9 +51,6 @@
             </li>
             <li class="nav-item mr-4">
               <a class="nav-link" href="empleo"><i class="bi bi-briefcase-fill"></i> <%=i18n.getString("nav.job") %></a>
-            </li>
-            <li class="nav-item mr-4">
-              <a class="nav-link" href="contacto"><i class="bi bi-mailbox2"></i> <%=i18n.getString("nav.contact") %></a>
             </li>
           </ul>
           <li class="nav dropdown">
@@ -85,7 +92,7 @@
             </div>
           </li>
 
-          <form method="post" action ="${pageContext.request.contextPath}/beans/barra-busqueda.jsp">
+          <form method="post" action="busqueda">
             <div class="input-group">
               <input type="text" class="input-ol form-control" name="busqueda" placeholder="<%=i18n.getString("searchbox.placeholder") %>" required/>
               <span class="input-group-btn">
@@ -98,11 +105,8 @@
         </div>
       </nav>
       <div class="container">
-        <div class="row pt-5 d-flex flex-row align-content-center flex-wrap ">
-        		<%
-		        	if(user.getFoto() != null) { %> <img class="profile-big" src="ImagenProgramador?id=<%=user.getId() %>"/>
-		        <% 	} else {%><img class="profile-big" src="${pageContext.request.contextPath}/src/images/profile.webp" alt="<%=i18n.getString("img.profile.alt") %>"/>
-         		<% 	} %>
+        <div class="row pt-5 d-flex flex-row align-content-center flex-wrap">
+		  <img class="profile-big" src="ImagenProgramador?id=<%=user.getId() %>"/>      
           <div class="d-flex flex-column pl-5">
             <span class="display-4 text-primary">
               <%=user.getNombre() %>
@@ -113,110 +117,98 @@
         <div class="row pt-5 d-flex justify-content-between">
           <div class="col-md-7">
           
-            <form action="${pageContext.request.contextPath}/beans/publicacion.jsp" method="post" enctype="multipart/form-data">
+            <form id="form" method="post" action="inicio" enctype="multipart/form-data">
               <h2 class="text-primary pb-3"><%=i18n.getString("index.publications.title") %></h2>
               <textarea class="publication" name="contenido" cols="100" rows="4" maxlength="240" required></textarea>
-              <div class="row d-flex justify-content-between">
-                <div class="col-md-8">
-                  <input type="file" name="foto" accept="image/*">
-                </div>
-                <div class="col-md-3 mr-2">
-                  <button class="form-control btn-primary text-center" type="submit"><i class="bi bi-cloud-upload"></i> <%=i18n.getString("index.publications.button.publish") %></button>
-                </div>   
+              <div class="row d-flex flex-row justify-content-between p-3">
+              	<div>
+              		<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalFoto"><i class="bi bi-images"></i></button>
+              		<span id="fileName"></span>
+              	</div>
+              	<button type="submit" class="btn btn-primary text-center"><i class="bi bi-cloud-upload"></i> <%=i18n.getString("index.publications.button.publish") %></button>
               </div>
+              
+              <div class="modal fade" id="modalFoto" tabindex="-1" role="dialog" aria-labelledby="modalFoto" aria-hidden="true">
+				  <div class="modal-dialog modal-lg" role="document">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <h5 class="modal-title" id="modalFoto"><%=i18n.getString("index.image.modal.title") %></h5>
+				        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				          <span aria-hidden="true">&times;</span>
+				        </button>
+				      </div>
+				      <div class="modal-body">
+				        <div class="file-loading">
+				          <input type="file" name="foto" id="foto" onchange="PreviewImage();" accept="image/*">
+				        </div>
+				        <img src="" id="preview" class="img-thumbnail">
+				      </div>
+				      <div class="modal-footer">
+				        <button type="button" class="btn btn-danger" onclick="LimpiarImage();"data-dismiss="modal"><i class="bi bi-trash-fill"></i></button>
+				        <button type="button" class="btn btn-success" data-dismiss="modal"><i class="bi bi-check-lg"></i></button>
+				      </div>
+				    </div>
+				  </div>
+				</div>
+              
+			  
             </form>
-            <%
+            	<%
                 	if(session.getAttribute("error") != null) {%>
-                		<div class="alert alert-danger" role="alert"><%= (String) session.getAttribute("error") %></div>
+                		<div class="alert alert-danger mt-3" role="alert"><%= (String) session.getAttribute("error") %></div>
                 <%
                 		session.setAttribute("error", null);
                 	}
                 %>
+                <%
+                	if(session.getAttribute("exito") != null) {%>
+                		<div class="alert alert-success mt-3" role="alert"><%= (String) session.getAttribute("exito") %></div>
+                <%
+                		session.setAttribute("exito", null);
+                	}
+                %>
             <div id="publications" class="pt-5 ml-3 mr-3">
-            	<div class="row mb-5">
-                	<img src="${pageContext.request.contextPath}/src/images/user1.jpg" alt="Foto de perfil" class="profile-medium">
-                	<div class="col-md-10 d-flex flex-column pl-4 pr-2">
-	                  <div class="d-flex flex-row justify-content-between">
-	                    <a href="#" class="text-primary font-weight-bold">Pablo Iglesias</a>
-	                    <span><i class="bi bi-heart"></i> 0</span>
-	                  </div>
-                  	  <small class="text-muted">01/01/2021 14:25</small>
-                      <span>La verdad es que es la mejor web del mundo, no te voy a engañar</span>
-                	</div>
-              	</div>
+            	
             </div>
             
           </div>
 
           <div class="col-md-4 col-lg-offset-3" style="position: -webkit-sticky;position: sticky; top: 20px;">
             <h2 class="text-primary pb-3"><%=i18n.getString("index.code.title") %></h2>
-            <div class="pb-3">
-              <a href="#" class="text-secondary font-weight-bold">Título aportación</a><br/>
-              <span>por <a href="#" class="text-primary">@username</a> - 01/01/21 00:00</span>
-            </div>
-
-            <div class="pb-3">
-              <a href="#" class="text-secondary font-weight-bold">Título aportación</a><br/>
-              <span>por <a href="#" class="text-primary">@username</a> - 01/01/21 00:00</span>
-            </div>
-
-            <div class="pb-3">
-              <a href="#" class="text-secondary font-weight-bold">Título aportación</a><br/>
-              <span>por <a href="#" class="text-primary">@username</a> - 01/01/21 00:00</span>
-            </div>
-
-            <div class="pb-3">
-              <a href="#" class="text-secondary font-weight-bold">Título aportación</a><br/>
-              <span>por <a href="#" class="text-primary">@username</a> - 01/01/21 00:00</span>
-            </div>
-
-            <div class="pb-3">
-              <a href="#" class="text-secondary font-weight-bold">Título aportación</a><br/>
-              <span>por <a href="#" class="text-primary">@username</a> - 01/01/21 00:00</span>
-            </div>
+            
+            <%	if(nAportaciones > 0){
+						for(int i = 0; i < aportaciones.length; i++) { 
+							if(aportaciones[i] != null) {
+								formatFecha = new SimpleDateFormat("EEE d MMM yyyy").format(aportaciones[i].getFecha());
+				%>
+							<div class="row code d-flex flex-row justify-content-between mb-4">
+				              <div class="col-md-1">
+				                <i class="<%= aportaciones[i].getIcono()%>"></i>
+				                
+				              </div>
+				              <div class="col-md-10 d-flex flex-column pl-5">
+				                <a class="text-primary font-weight-bold" href="aporte?id=<%= aportaciones[i].getId()%>"><%= aportaciones[i].getTitulo()%></a>
+				                <small><%=i18n.getString("contribution.by") %> <a class="text-secondary" href="perfil?p=<%=aportaciones[i].getUsername()%>">@<%=aportaciones[i].getUsername()%></a> - <%= formatFecha%></small>
+				              </div>
+				            </div>
+				<%     		}
+						}
+					} else { %>
+						<div class="alert alert-danger mt-3" role="alert">
+						  <%=i18n.getString("index.code.nodata") %>
+						</div>
+				<%	}	%>
           </div>
         </div>
       </div>
     
-	<footer class="page-footer font-small bg-light  text-muted pt-3">
-	  <div class="container">
-	    <ul class="list-unstyled list-inline text-center">
-	      <li class="list-inline-item">
-	        <a class="btn-floating btn-fb text-muted mx-1" href="https://www.instagram.com/brifemu" target="_blank">
-	          <i class="fab fa-instagram"> </i>
-	        </a>
-	      </li>
-	      <li class="list-inline-item">
-	        <a class="btn-floating btn-tw text-muted mx-1" href="https://twitter.com/brifemu" target="_blank">
-	          <i class="fab fa-twitter"> </i>
-	        </a>
-	      </li>
-	      <li class="list-inline-item">
-	        <a class="btn-floating btn-li mx-1 text-muted" href="https://www.linkedin.com/in/brifemu" target="_blank">
-	          <i class="fab fa-linkedin-in"> </i>
-	        </a>
-	      </li>
-	      <li class="list-inline-item">
-	        <a class="btn-floating btn-dribbble text-muted mx-1" href="https://github.com/brifemu" target="_blank">
-	          <i class="fab fa-github"> </i>
-	        </a>
-	      </li>
-	    </ul>
-	  </div>
-	  <div class="footer-copyright text-center">
-	  	<a class="text-muted" href="aviso-legal" target="_blank">Aviso Legal</a> - 
-	    <a class="text-muted" href="privacidad" target="_blank">Política de privacidad</a> - 
-	    <a class="text-muted" href="cookies" target="_blank">Política de cookies</a> - 
-	    <a class="text-muted" href="contacto">Contacto</a>
-	  </div>
-	  <div class="footer-copyright text-center py-3">© 2021 Copyright
-	    <a class="text-muted" href="https://www.linkedin.com/in/brifemu" target="_blank"> nexcript</a>
-	  </div>
-	</footer>
-
+	<jsp:include page="footer.jsp"></jsp:include>
+	
 	<script src="https://kit.fontawesome.com/5d273a2576.js" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+	<script src="${pageContext.request.contextPath}/js/formValidation/publicacion.js"></script>
 </body>
 </html>

@@ -3,6 +3,8 @@
 <!DOCTYPE html>
 <%@ page import="Programador.MProgramador" %>
 <%@ page import="java.util.ResourceBundle" %>
+<%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="Codigo.MLenguaje" %>
 <html>
 <head>
 	<meta charset="UTF-8">
@@ -12,11 +14,24 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/sass/styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
-    <title>nexcript</title>
+    <title>nexcript > Editar perfil</title>
+    <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/src/images/favicon.png">
     <%
     	ResourceBundle i18n = ResourceBundle.getBundle("i18n.i18n", response.getLocale());
     	MProgramador user = (MProgramador) session.getAttribute("user");
+    	String formatFecha;
+    	MLenguaje[] lenguajes = (MLenguaje[]) session.getAttribute("listaLenguajes");
     %>
+    <script>
+	    function comprobar() {
+	    	console.log("entra");
+			if(document.getElementById("fotofile").files[0].size > 5000000){
+				alert('El archivo no debe superar los 5MB');
+				document.getElementById("fotofile").value = '';
+				document.getElementById("fotofile").name = '';
+			} 
+		};
+    </script>
 </head>
 <body>
     
@@ -40,9 +55,6 @@
             </li>
             <li class="nav-item mr-4">
               <a class="nav-link" href="empleo"><i class="bi bi-briefcase-fill"></i> <%=i18n.getString("nav.job") %></a>
-            </li>
-            <li class="nav-item mr-4">
-              <a class="nav-link" href="contacto"><i class="bi bi-mailbox2"></i> <%=i18n.getString("nav.contact") %></a>
             </li>
           </ul>
           <li class="nav dropdown">
@@ -84,7 +96,7 @@
             </div>
           </li>
 
-          <form method="post" action ="${pageContext.request.contextPath}/beans/barra-busqueda.jsp">
+          <form method="post" action ="busqueda">
             <div class="input-group">
               <input type="text" class="input-ol form-control" name="busqueda" placeholder="<%=i18n.getString("searchbox.placeholder") %>" required/>
               <span class="input-group-btn">
@@ -118,7 +130,7 @@
         
         <div class="tab-content">
           <div class="tab-pane container mt-5 active" id="perfil">
-            <form id="editar-perfil" method="post" action="${pageContext.request.contextPath}/beans/editar-perfil.jsp">
+            <form id="editar-perfil" method="post" action="editar-perfil">
 
               <div class="form-group">
                 <label class="font-weight-bold text-secondary">Nombre completo</label>
@@ -145,7 +157,28 @@
                 <input type="text" class="form-control" name="ciudad" value="<%= user.getCiudad()%>">
               </div>
     
-              <button type="submit" class="btn btn-primary">Confirmar cambios</button>
+    		  <div class="form-group">
+		      	<label class="font-weight-bold text-secondary">Lenguaje de programación destacado</label>
+		        	<div class="input-group mb-2">
+						<div class="input-group-prepend">
+					    	<div class="input-group-text">
+					        	<i class="bi bi-code-slash"></i>
+					        </div>
+			    		</div>
+					    <select class="form-control" name="lenguaje">
+					        <option value="-" <%="-".equals(user.getLenguaje()) ? "selected" : null %>>-</option>
+					        	<%
+					        		for(MLenguaje lenguaje: lenguajes){
+					        	%>
+					        			<option value="<%=lenguaje.getValor()%>" <%=lenguaje.getValor().equals(user.getLenguaje()) ? "selected" : null %>> <%=lenguaje.getNombre()%></option>
+					        	<%
+					        		}
+					        	%>
+						</select>
+					</div>
+	        	</div>
+    		  
+              <button type="submit" class="btn btn-primary" name="btnSubmit" value="perfil">Confirmar cambios</button>
             </form>
             <%
 		       	if(session.getAttribute("error-perfil") != null) {%>
@@ -168,7 +201,7 @@
 	          		<form method="post" action="subirfotoperfil" enctype="multipart/form-data">
 	              		<div class="form-group">
 	                		<label class="font-weight-bold text-secondary">Seleccionar imagen</label>
-	                 		<input type="file" size=60 name="file" value="Examinar" accept="image/*" required>
+	                 		<input type="file" id="fotofile" name="file" value="Examinar" accept="image/*" onchange="comprobar();" required>
 	              		</div>
 	              		<button type="submit" class="btn btn-primary">Cambiar foto de perfil</button>
 	            	</form>
@@ -189,15 +222,12 @@
 	          	</div>
 	          	<div class="col-md-4">
 	          		<p class="font-weight-bold text-secondary">Imagen de perfil actual</p>
-	          		<%
-			        	if(user.getFoto() != null) {%> <img class="profile-big" src="ImagenProgramador?id=<%=user.getId() %>"/>
-			        <% 	} else {%><img class="profile-big" src="${pageContext.request.contextPath}/src/images/profile.webp"/>
-	         		<% 	} %>
+	          		<img class="profile-big" src="ImagenProgramador?id=<%=user.getId() %>"/>
 	          	</div>
 	          </div>
           </div>
           <div class="tab-pane container mt-5" id="correo">
-            <form id="editar-correo" method="post" action="${pageContext.request.contextPath}/beans/editar-correo.jsp">
+            <form id="editar-correo" method="post" action="editar-perfil">
     
               <div class="form-group">
                 <label class="font-weight-bold text-secondary">Dirección de correo</label>
@@ -227,7 +257,7 @@
                 <input type="password" class="form-control" name="repassword" id="repassword" placeholder="Repite tu contraseña" required>
               </div>
     
-              <button type="submit" class="btn btn-primary">Editar correo</button>
+              <button type="submit" class="btn btn-primary" name="btnSubmit" value="correo">Editar correo</button>
             </form>
             <%
        		if(session.getAttribute("error-correo") != null) {%>
@@ -245,7 +275,7 @@
 	        %>
           </div>
           <div class="tab-pane container mt-5" id="clave">
-            <form id="editar-clave" method="post" action="${pageContext.request.contextPath}/beans/editar-pass.jsp">
+            <form id="editar-clave" method="post" action="editar-perfil">
               <div class="form-group">
                 <label class="font-weight-bold text-secondary">Contraseña actual</label>
                 <input type="password" class="form-control" name="password" id="password" placeholder="Contraseña" required>
@@ -271,7 +301,7 @@
                 <input type="password" class="form-control" name="repassword" id="repassword" placeholder="Repite tu nueva contraseña" required>
               </div>
     
-              <button type="submit" class="btn btn-primary">Editar contraseña</button>
+              <button type="submit" class="btn btn-primary" name="btnSubmit" value="password">Editar contraseña</button>
             </form>
             <%
        		if(session.getAttribute("error-clave") != null) {%>
@@ -290,9 +320,11 @@
           </div>
           <div class="tab-pane container mt-5" id="confirmacion">
             <%
-            	if(user.getConfirmado() == true) { %>
+            	if(user.getConfirmado() == true) { 
+            		formatFecha = new SimpleDateFormat("dd/MM/yyyy").format(user.getFechaConfirmacion());
+            %>
             	
-            		<div class="alert alert-success w-100" role="alert">Su dirección de correo fue confirmada el día <%=user.getFechaConfirmacion() %> por lo que no necesita confirmarla de nuevo</div>
+            		<div class="alert alert-success w-100" role="alert">Su dirección de correo fue confirmada el día <i class="bi bi-clock-history"></i> <%=formatFecha %> por lo que no necesita confirmarla de nuevo</div>
             		
             <% 	}
             	else { %>
@@ -308,12 +340,12 @@
             				<div class="alert alert-success mt-4 mb-4 w-100" role="alert">Se ha enviado un código de verificación a la dirección de correo asociada a tu cuenta de nexcript.
             				En caso de no haberlo recibido puedes <a href="correoConfirmacion">solicitar un reenvio de su código de verificación</a></div>
             				
-            				<form method="post" action="${pageContext.request.contextPath}/beans/verificar-correo.jsp">
+            				<form method="post" action="editar-perfil">
             					<div class="form-group">
 					                <label class="font-weight-bold text-secondary">Código de verificación</label>
 					                <input type="text" class="form-control" name="codigo">
 					           	</div>
-					           	<button type="submit" class="btn btn-primary">Confirmar correo</button>
+					           	<button type="submit" class="btn btn-primary" name="btnSubmit" value="confirmacion">Confirmar correo</button>
             				</form>
             <%				
             			}
@@ -331,41 +363,7 @@
         </div>
         
       </div>
-    <footer class="page-footer font-small bg-light  text-muted pt-3">
-	  <div class="container">
-	    <ul class="list-unstyled list-inline text-center">
-	      <li class="list-inline-item">
-	        <a class="btn-floating btn-fb text-muted mx-1" href="https://www.instagram.com/brifemu" target="_blank">
-	          <i class="fab fa-instagram"> </i>
-	        </a>
-	      </li>
-	      <li class="list-inline-item">
-	        <a class="btn-floating btn-tw text-muted mx-1" href="https://twitter.com/brifemu" target="_blank">
-	          <i class="fab fa-twitter"> </i>
-	        </a>
-	      </li>
-	      <li class="list-inline-item">
-	        <a class="btn-floating btn-li mx-1 text-muted" href="https://www.linkedin.com/in/brifemu" target="_blank">
-	          <i class="fab fa-linkedin-in"> </i>
-	        </a>
-	      </li>
-	      <li class="list-inline-item">
-	        <a class="btn-floating btn-dribbble text-muted mx-1" href="https://github.com/brifemu" target="_blank">
-	          <i class="fab fa-github"> </i>
-	        </a>
-	      </li>
-	    </ul>
-	  </div>
-	  <div class="footer-copyright text-center">
-	  	<a class="text-muted" href="aviso-legal" target="_blank">Aviso Legal</a> - 
-	    <a class="text-muted" href="privacidad" target="_blank">Política de privacidad</a> - 
-	    <a class="text-muted" href="cookies" target="_blank">Política de cookies</a> - 
-	    <a class="text-muted" href="contacto">Contacto</a>
-	  </div>
-	  <div class="footer-copyright text-center py-3">© 2021 Copyright
-	    <a class="text-muted" href="https://www.linkedin.com/in/brifemu" target="_blank"> nexcript</a>
-	  </div>
-	</footer>
+    <jsp:include page="footer.jsp"></jsp:include>
     <script src="https://kit.fontawesome.com/5d273a2576.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>

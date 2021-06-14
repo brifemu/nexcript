@@ -1,9 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page import="java.util.ResourceBundle" %>
-
+<%@ page import="Codigo.MLenguaje" %>
 <%
 	ResourceBundle i18n = ResourceBundle.getBundle("i18n.i18n", response.getLocale());
+	MLenguaje[] lenguajes = (MLenguaje[]) session.getAttribute("listaLenguajes");
 %>
 
 <!DOCTYPE html>
@@ -16,7 +17,8 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/sass/styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
-    <title>nexcript</title>
+    <title>nexcript > Registro</title>
+    <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/src/images/favicon.png">
 </head>
 <body style="background-color: black;">
 	<video autoplay muted loop id="video" class="login-video">
@@ -41,7 +43,7 @@
 				</div>
 				<h1 class="font-weight-bold text-primary"><%=i18n.getString("register.title") %></h1>
 				
-				<form id="registro-form" method="POST" action="${pageContext.request.contextPath}/beans/registro.jsp">
+				<form id="registro-form" action="registro" method="POST">
 					<div class="form-group">
 						<label class="font-weight-bold text-secondary"><%=i18n.getString("register.profile.label") %></label>
 						<select class="form-control" id="rol" name="rol">
@@ -99,7 +101,29 @@
 						<label class="font-weight-bold text-secondary"><%=i18n.getString("register.city.label") %></label>
 						<input type="text" class="form-control" id="ciudad" name="ciudad" maxlength="36">
 					</div>
+					
+					<div class="form-group" id="form-lenguaje">
+		            	<label class="font-weight-bold text-secondary"><%=i18n.getString("contribution.langcode.label") %></label>
+		             	<div class="input-group mb-2">
+							<div class="input-group-prepend">
+					            <div class="input-group-text">
+					              <i class="bi bi-code-slash"></i>
+					            </div>
+			    			</div>
+					        <select class="form-control" name="lenguaje">
+					        	<option value="-">-</option>
+					        	<%
+					        		for(MLenguaje lenguaje: lenguajes){
+					        	%>
+					        			<option value="<%=lenguaje.getValor()%>"> <%=lenguaje.getNombre()%></option>
+					        	<%
+					        		}
+					        	%>
+							</select>
+						</div>
+	        		</div>
 
+					
 					<button type="submit" class="btn btn-primary btn-block mb-3"><i class="bi bi-person-plus-fill"></i> <%=i18n.getString("register.button.register") %></button>
 				</form>
 				
@@ -124,8 +148,13 @@
 				</ul>
 			</div>
 		</div>
-		<div class="row d-flex justify-content-center pb-5">
-			<span class="text-light">nexcript © 2020</span>
+		<div class="row pb-5">
+			<div class="footer-copyright text-center">
+		  		<a class="text-muted" href="aviso-legal" target="_blank"><%=i18n.getString("footer.legal") %></a> - 
+		    	<a class="text-muted" href="privacidad" target="_blank"><%=i18n.getString("footer.privacy") %></a> - 
+		    	<a class="text-muted" href="cookies" target="_blank"><%=i18n.getString("footer.cookies") %></a> - 
+		    	<a class="text-muted" href="contacto" target="_blank"><%=i18n.getString("footer.contact") %></a>
+		  	</div>
 		</div>
 	</div>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>

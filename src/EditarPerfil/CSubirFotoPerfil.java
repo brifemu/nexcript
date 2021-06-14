@@ -90,6 +90,7 @@ public class CSubirFotoPerfil extends HttpServlet {
 				while (i.hasNext()) {
 					fi = (FileItem) i.next();
 					if (!fi.isFormField()) {
+						//Detecta que el input del formulario es de tipo file
 						fieldName = fi.getFieldName();
 						fileName = fi.getName();
 						extension = fe.getFileExtension(fileName);
@@ -100,6 +101,7 @@ public class CSubirFotoPerfil extends HttpServlet {
 						} else {
 							file = new File(filePath + "/" + fileName.substring(fileName.lastIndexOf("/") + 1));
 						}
+						//Termina de cargar el archivo del input
 						fi.write(file);
 					}
 				}
@@ -107,9 +109,12 @@ public class CSubirFotoPerfil extends HttpServlet {
 				ex.getStackTrace();
 			}
 		} 
-		
-		validExtension = Arrays.stream(valid_extensions).anyMatch(extension::equals);
+		//Comprueba si la extensión del archivo es válida
+		for(String ext: valid_extensions) {
+			if(ext.equals(extension)) validExtension = true;
+		}
 		if(validExtension) {
+			//Si lo es, actualizamos
 			user.setImgFile(file);
 			user.update("foto", file);
 			sesion.setAttribute("user", user);

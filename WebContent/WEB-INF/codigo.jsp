@@ -2,7 +2,9 @@
     pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <%@ page import="Programador.MProgramador" %>
+<%@ page import="Codigo.MAportacion" %>
 <%@ page import="java.util.ResourceBundle" %>
+<%@ page import="java.text.SimpleDateFormat" %>
 <html>
 <head>
 	<meta charset="UTF-8">
@@ -13,10 +15,18 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.11.0/devicon.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
-    <title>nexcript</title>
+    <title>nexcript > Código</title>
+    <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/src/images/favicon.png">
     <%
     	MProgramador user = (MProgramador) session.getAttribute("user");
     	ResourceBundle i18n = ResourceBundle.getBundle("i18n.i18n", response.getLocale());
+    	
+    	MAportacion aportacion = new MAportacion();
+    	MAportacion[] aportaciones = (MAportacion[]) session.getAttribute("codigo.aportaciones");
+
+    	String formatFecha;
+    	int nAportaciones = 0;
+    	for(MAportacion ap:aportaciones) if(ap != null) nAportaciones++;
     %>
 </head>
 <body>
@@ -40,9 +50,6 @@
             </li>
             <li class="nav-item mr-4">
               <a class="nav-link" href="empleo"><i class="bi bi-briefcase-fill"></i> <%=i18n.getString("nav.job") %></a>
-            </li>
-            <li class="nav-item mr-4">
-              <a class="nav-link" href="contacto"><i class="bi bi-mailbox2"></i> <%=i18n.getString("nav.contact") %></a>
             </li>
           </ul>
           <li class="nav dropdown">
@@ -84,7 +91,7 @@
             </div>
           </li>
 
-          <form method="post" action ="${pageContext.request.contextPath}/beans/barra-busqueda.jsp">
+          <form method="post" action ="busqueda">
             <div class="input-group">
               <input type="text" class="input-ol form-control" name="busqueda" placeholder="<%=i18n.getString("searchbox.placeholder") %>" required/>
               <span class="input-group-btn">
@@ -99,155 +106,38 @@
           <div class="container">
         <div class="row d-flex flex-row justify-content-between pt-5">
           <div class="col-md-3 d-flex flex-column align-items-center">
-          	<a href="crear-aporte" class="btn btn-primary btn-block mb-3"><i class="bi bi-node-plus"></i> <%=i18n.getString("code.contribution.button.create") %></a>
-            <h2 class="text-primary"><%=i18n.getString("code.filter.title") %></h2>
-            <form action="">
-              <div class="form-group">
-                <label class="font-weight-bold text-secondary" for="orden"><%=i18n.getString("code.filter.orderby") %></label>
-                <select class="form-control" id="orden">
-                  <option value="fecha asc"><%=i18n.getString("code.filter.orderby.op1") %></option>
-                  <option value="fecha des"><%=i18n.getString("code.filter.orderby.op2") %></option>
-                </select>
-                <br/>
-                <p class="font-weight-bold text-secondary"><%=i18n.getString("code.filter.codelang") %></p>
-
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="checkbox" id="java" value="java">
-                  <label class="form-check-label" for="java">Java</label>
-                </div>
-
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="checkbox" id="java" value="javascript">
-                  <label class="form-check-label" for="javascript">JavaScript</label>
-                </div>
-
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="checkbox" id="react" value="react">
-                  <label class="form-check-label" for="react">React</label>
-                </div>
-
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="checkbox" id="reactnative" value="reactnative">
-                  <label class="form-check-label" for="reactnative">React Native</label>
-                </div>
-
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="checkbox" id="gatsby" value="gatsby">
-                  <label class="form-check-label" for="gatsby">Gatsby</label>
-                </div>
-
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="checkbox" id="vue" value="vue">
-                  <label class="form-check-label" for="vue">Vue</label>
-                </div>
-
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="checkbox" id="angular" value="angular">
-                  <label class="form-check-label" for="angular">Angular</label>
-                </div>
-
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="checkbox" id="php" value="php">
-                  <label class="form-check-label" for="php">Php</label>
-                </div>
-
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="checkbox" id="phyton" value="phyton">
-                  <label class="form-check-label" for="phyton">Phyton</label>
-                </div>
-
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="checkbox" id="c" value="c">
-                  <label class="form-check-label" for="c">C</label>
-                </div>
-
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="checkbox" id="csharp" value="csharp">
-                  <label class="form-check-label" for="csharp">C#</label>
-                </div>
-
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="checkbox" id="c++" value="c++">
-                  <label class="form-check-label" for="c++">C++</label>
-                </div>
-
-
-              </div>
-            </form>
+          	<img class="img-fluid" src="${pageContext.request.contextPath}/src/images/code.gif" alt="nexcript" width="200">
+          	<a href="crear-aporte" class="btn btn-primary mb-3"><i class="bi bi-node-plus"></i> <%=i18n.getString("code.contribution.button.create") %></a>
           </div>
           <div class="col-md-8">
 
-            <div class="row code d-flex flex-row justify-content-between mb-4">
-              <div class="col-md-1">
-                <i class="devicon-java-plain-wordmark colored"></i>
-              </div>
-              <div class="col-md-11 d-flex flex-column pl-5">
-                <a class="text-primary font-weight-bold" href="/aporte?id=id">Como recorrer un bucle</a>
-                <small><%=i18n.getString("code.contribution.by") %> <a class="text-secondary" href="/perfil?p=username">@username</a> - 01/01/2021 10:25</small>
-                <small>Ejemplos de como se debe y como no se debe recorrer un bucle</small>
-              </div>
-            </div>
-
-            <div class="row code d-flex flex-row justify-content-between mb-4">
-              <div class="col-md-1">
-                <i class="devicon-javascript-plain colored"></i>
-              </div>
-              <div class="col-md-11 d-flex flex-column pl-5">
-                <a class="text-primary font-weight-bold" href="#">Los distintos tipos de variables</a>
-                <small>por <a class="text-secondary" href="#">@username</a> - 01/01/2021 10:25</small>
-                <small>Explicación del alcance de las variables</small>
-              </div>
-            </div>
-
-            <div class="row code d-flex flex-row justify-content-between mb-4">
-              <div class="col-md-1">
-                <i class="devicon-php-plain colored"></i>
-              </div>
-              <div class="col-md-11 d-flex flex-column pl-5">
-                <a class="text-primary font-weight-bold" href="#">Que son las sesiones y para que se usan</a>
-                <small>por <a class="text-secondary" href="#">@username</a> - 01/01/2021 10:25</small>
-                <small>¿Alguna vez pensaste en como se crean las sesiones en php? Entra aquí y descúbrelo</small>
-              </div>
-            </div>
+            <%	if(nAportaciones > 0){
+            		for(int i = 0; i < aportaciones.length; i++) { 
+						if(aportaciones[i] != null){
+							formatFecha = new SimpleDateFormat("EEE d MMM yyyy HH:mm:ss").format(aportaciones[i].getFecha());
+			%>
+						<div class="row code d-flex flex-row justify-content-between mb-4">
+			              <div class="col-md-1">
+			                <i class="<%=aportaciones[i].getIcono() %>"></i>
+			              </div>
+			              <div class="col-md-11 d-flex flex-column pl-5">
+			                <a class="text-primary font-weight-bold" href="aporte?id=<%= aportaciones[i].getId()%>"><%= aportaciones[i].getTitulo()%></a>
+			                <small><%=i18n.getString("contribution.by") %> <a class="text-secondary" href="perfil?p=<%= aportaciones[i].getUsername()%>">@<%= aportaciones[i].getUsername()%></a> - <%= formatFecha%></small>
+			                <small><%=aportaciones[i].getDescripcion() %></small>
+			              </div>
+			            </div>
+			<% 			}
+					}
+				} else { %>
+					<div class="alert alert-danger mt-3" role="alert">
+						<%=i18n.getString("code.list.nodata") %>
+					</div>
+			<%	}	%>
 
           </div>
         </div>
       </div>
-    <footer class="page-footer font-small bg-light  text-muted pt-3">
-	  <div class="container">
-	    <ul class="list-unstyled list-inline text-center">
-	      <li class="list-inline-item">
-	        <a class="btn-floating btn-fb text-muted mx-1" href="https://www.instagram.com/brifemu" target="_blank">
-	          <i class="fab fa-instagram"> </i>
-	        </a>
-	      </li>
-	      <li class="list-inline-item">
-	        <a class="btn-floating btn-tw text-muted mx-1" href="https://twitter.com/brifemu" target="_blank">
-	          <i class="fab fa-twitter"> </i>
-	        </a>
-	      </li>
-	      <li class="list-inline-item">
-	        <a class="btn-floating btn-li mx-1 text-muted" href="https://www.linkedin.com/in/brifemu" target="_blank">
-	          <i class="fab fa-linkedin-in"> </i>
-	        </a>
-	      </li>
-	      <li class="list-inline-item">
-	        <a class="btn-floating btn-dribbble text-muted mx-1" href="https://github.com/brifemu" target="_blank">
-	          <i class="fab fa-github"> </i>
-	        </a>
-	      </li>
-	    </ul>
-	  </div>
-	  <div class="footer-copyright text-center">
-	  	<a class="text-muted" href="aviso-legal" target="_blank">Aviso Legal</a> - 
-	    <a class="text-muted" href="privacidad" target="_blank">Política de privacidad</a> - 
-	    <a class="text-muted" href="cookies" target="_blank">Política de cookies</a> - 
-	    <a class="text-muted" href="contacto">Contacto</a>
-	  </div>
-	  <div class="footer-copyright text-center py-3">© 2021 Copyright
-	    <a class="text-muted" href="https://www.linkedin.com/in/brifemu" target="_blank"> nexcript</a>
-	  </div>
-	</footer>
+   <jsp:include page="footer.jsp"></jsp:include>
 	<script src="https://kit.fontawesome.com/5d273a2576.js" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>

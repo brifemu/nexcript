@@ -2,10 +2,9 @@ package Programador;
 
 import java.io.File;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.Date;
 
 import Usuario.MUsuario;
@@ -15,6 +14,7 @@ public class MProgramador extends MUsuario {
 	String username;
 	byte[] curriculum;
 	Timestamp fechaCurriculum;
+	String lenguaje;
 	
 	public MProgramador() {
 		super();
@@ -50,6 +50,16 @@ public class MProgramador extends MUsuario {
 		this.fechaCurriculum = fechaCurriculum;
 	}
 
+	
+	public String getLenguaje() {
+		return lenguaje;
+	}
+
+
+	public void setLenguaje(String lenguaje) {
+		this.lenguaje = lenguaje;
+	}
+
 
 	public boolean leer(String campo, String valor) {
 		boolean existe = false;
@@ -71,6 +81,7 @@ public class MProgramador extends MUsuario {
 				pais = rs.getString("pais");
 				provincia = rs.getString("provincia");
 				ciudad = rs.getString("ciudad");
+				lenguaje = rs.getString("lenguaje");
 				confirmado = rs.getBoolean("confirmado");
 				fechaConfirmacion = rs.getTimestamp("fechaconfirmacion");
 				curriculum = rs.getBytes("curriculum");
@@ -107,8 +118,11 @@ public class MProgramador extends MUsuario {
 				pais = rs.getString("pais");
 				provincia = rs.getString("provincia");
 				ciudad = rs.getString("ciudad");
-				/*curriculum = rs.getBytes("curriculum");
-				fechaCurriculum = rs.getDate("fechaCurriculum");*/
+				lenguaje = rs.getString("lenguaje");
+				confirmado = rs.getBoolean("confirmado");
+				fechaConfirmacion = rs.getTimestamp("fechaconfirmacion");
+				curriculum = rs.getBytes("curriculum");
+				fechaCurriculum = rs.getTimestamp("fechaCurriculum");
 				existe = true;
 		    } 
 			rs.close();
@@ -121,12 +135,77 @@ public class MProgramador extends MUsuario {
 		return existe;
 	}
 	
-	public boolean insertar(String mail, String username, String password, String nombre, String pais, String provincia, String ciudad) {
+	public String leerColumna(String columna, String campo, int valor) {
+		String devolucion = "";
+		con = conexion.crearConexion();
+		String query = "SELECT "+columna+" as result from programador WHERE "+campo+" = ?";
+		try {
+			ps = con.prepareStatement(query);
+			ps.setInt(1,valor);
+			rs = ps.executeQuery();
+			if(rs.next()){
+				devolucion = rs.getString("result");
+		    } 
+			rs.close();
+			ps.close();
+			con.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return devolucion;
+	}
+	
+	public String[] leerColumna(String columna1, String columna2, String campo, int valor) {
+		String[] devolucion = new String[3];
+		con = conexion.crearConexion();
+		String query = "SELECT "+columna1+" as result1, "+columna2+" as result2, id  from programador WHERE "+campo+" = ?";
+		try {
+			ps = con.prepareStatement(query);
+			ps.setInt(1,valor);
+			rs = ps.executeQuery();
+			if(rs.next()){
+				devolucion[0] = rs.getString("result1");
+				devolucion[1] = rs.getString("result2");
+				devolucion[2] = String.valueOf(rs.getInt("id"));
+		    } 
+			rs.close();
+			ps.close();
+			con.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return devolucion;
+	}
+	
+	public boolean leerMinimo(int valor) {
+		boolean exito = false;
+		con = conexion.crearConexion();
+		String query = "SELECT username, nombre from programador WHERE id = ?";
+		try {
+			ps = con.prepareStatement(query);
+			ps.setInt(1,valor);
+			rs = ps.executeQuery();
+			if(rs.next()){
+				username = rs.getString("username");
+				nombre = rs.getString("nombre");
+				exito = true;
+		    } 
+			rs.close();
+			ps.close();
+			con.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return exito;
+	}
+	
+	public boolean insertar(String mail, String username, String password, String nombre, String pais, String provincia, String ciudad, byte[] foto, String lenguaje) {
 		boolean resultado = false;
-		Timestamp fecha = new Timestamp(System.currentTimeMillis());
-		//Date fecha = new Date();
-		//fFecha = "Y-MM/dd-hh-mm-ss"; 
-
+		Date today = new Date();
+		Timestamp fecha = new Timestamp(today.getTime());
 		con = conexion.crearConexion();
 		this.mail = mail;
 		this.password = password;
@@ -137,7 +216,9 @@ public class MProgramador extends MUsuario {
 		this.pais = pais;
 		this.provincia = provincia;
 		this.ciudad = ciudad;
-		String query = "INSERT INTO programador (mail, username, password, registro, ultimaconexion, nombre, pais, provincia, ciudad) VALUES (?,?,?,?,?,?,?,?,?)";
+		this.foto = foto;
+		this.lenguaje = lenguaje;
+		String query = "INSERT INTO programador (mail, username, password, registro, ultimaconexion, nombre, pais, provincia, ciudad, foto, lenguaje) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
 		try {
 			PreparedStatement ps = con.prepareStatement(query);
 			ps.setString(1,mail);
@@ -149,7 +230,8 @@ public class MProgramador extends MUsuario {
 			ps.setString(7,pais);
 			ps.setString(8,provincia);
 			ps.setString(9,ciudad);
-
+			ps.setBytes(10,foto);
+			ps.setString(11,lenguaje);
 			ps.execute();
 			ps.close();
 			con.close();
@@ -256,24 +338,58 @@ public class MProgramador extends MUsuario {
 		return resultado;
 	}
 	
-	public int[] realizarBusqueda(String valor,  int pag, int filas) {
+	public MProgramador[] realizarBusqueda(String valor,  int pag, int filas) {
 		con = conexion.crearConexion();
 		int offset;
 		int indice = 0;
-		int[] resultado = new int[filas];
-		
+		MProgramador[] resultado = new MProgramador[filas];
+		MProgramador user;
 		if(pag == 1) offset = 0;
 		else offset = (pag-1)*filas;
 		
-		String query = "SELECT id FROM programador WHERE UPPER(nombre) LIKE UPPER(?) OR UPPER(username) LIKE UPPER(?) LIMIT "+filas+" OFFSET "+offset;
+		String query = "SELECT id, username, foto, nombre FROM programador WHERE UPPER(nombre) LIKE UPPER(?) OR UPPER(username) LIKE UPPER(?) LIMIT "+filas+" OFFSET "+offset;
 		try {
 			ps = con.prepareStatement(query);	
 			ps.setString(1, "%"+valor+"%");
 			ps.setString(2, "%"+valor+"%");
 			rs = ps.executeQuery();
 			while(rs.next()) {
-				resultado[indice] = rs.getInt("id");
+				user = new MProgramador();
+				user.id = rs.getInt("id");
+				user.username = rs.getString("username");
+				user.foto = rs.getBytes("foto");
+				user.nombre = rs.getString("nombre");
+				resultado[indice] = user;
 				indice++;
+			}
+			rs.close();
+			ps.close();
+			con.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return resultado;
+	}
+	
+	public ArrayList<MProgramador> listar(String columna) {
+		con = conexion.crearConexion();
+		ArrayList<MProgramador> resultado = new ArrayList<MProgramador>();
+		MProgramador user;
+
+		
+		String query = "SELECT id, nombre, pais, provincia, ciudad, lenguaje FROM programador WHERE "+columna+" IS NOT NULL";
+		try {
+			ps = con.prepareStatement(query);	
+			rs = ps.executeQuery();
+			while(rs.next()) {
+				user = new MProgramador();
+				user.id = rs.getInt("id");
+				user.nombre = rs.getString("nombre");
+				user.pais = rs.getString("pais");
+				user.provincia = rs.getString("provincia");
+				user.ciudad = rs.getString("ciudad");
+				user.lenguaje = rs.getString("lenguaje");
+				resultado.add(user);
 			}
 			rs.close();
 			ps.close();
@@ -304,6 +420,24 @@ public class MProgramador extends MUsuario {
 			e.printStackTrace();
 		}
 		return resultado;
+	}
+	
+	public void logConexion(String ip) {
+		con = conexion.crearConexion();
+		Date today = new Date();
+		Timestamp fecha = new Timestamp(today.getTime());
+		String query = "INSERT INTO log_login (usuario, fecha, ip, tipo) VALUES (?,?,?,'P')";
+		try {
+			PreparedStatement ps = con.prepareStatement(query);
+			ps.setInt(1,id);
+			ps.setTimestamp(2,fecha);
+			ps.setString(3,ip);
+			ps.execute();
+			ps.close();
+			con.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 }
 

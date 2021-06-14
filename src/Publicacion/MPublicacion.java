@@ -15,6 +15,11 @@ public class MPublicacion {
 	private byte[] imagen;
 	private Timestamp fecha;
 	private int likes;
+	private boolean activo;
+	
+	private String puUsername;
+	private String puNombre;
+	
 	
 	private Conexion conexion;
 	private Connection con;
@@ -29,7 +34,31 @@ public class MPublicacion {
 		return id;
 	}
 
+	
 
+	public String getPuUsername() {
+		return puUsername;
+	}
+
+	public String getPuNombre() {
+		return puNombre;
+	}
+
+	public void setPuUsername(String puUsername) {
+		this.puUsername = puUsername;
+	}
+
+	public void setPuNombre(String puNombre) {
+		this.puNombre = puNombre;
+	}
+
+	public boolean isActivo() {
+		return activo;
+	}
+
+	public void setActivo(boolean activo) {
+		this.activo = activo;
+	}
 
 	public int getUsuario() {
 		return usuario;
@@ -102,6 +131,48 @@ public class MPublicacion {
 		}
 		return likes;
 	}
+	
+	public int getRespuestas() {
+		int resp = 0;
+		con = conexion.crearConexion();
+		String query = "SELECT id from pub_resp WHERE publicacion = "+id;
+		try {
+			ps = con.prepareStatement(query, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+			rs = ps.executeQuery();
+			if(rs.last()){
+				resp = rs.getRow();
+		    } 
+			rs.close();
+			ps.close();
+			con.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return resp;
+	}
+	
+	public int[] getIndicesRespuestas(int tamanio) {
+		int[] res = new int[tamanio];
+		int i = 0;
+		con = conexion.crearConexion();
+		String query = "SELECT id from pub_resp WHERE publicacion = "+id+" ORDER BY id DESC";
+		try {
+			ps = con.prepareStatement(query);
+			rs = ps.executeQuery();
+			while(rs.next()){		
+				res[i] = rs.getInt("id");
+				i++;
+		    } 
+			rs.close();
+			ps.close();
+			con.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return res;
+	}
 
 	public boolean leer(String campo, int valor) {
 		boolean existe = false;
@@ -117,6 +188,7 @@ public class MPublicacion {
 				contenido = rs.getString("contenido");
 				imagen = rs.getBytes("imagen");
 				fecha = rs.getTimestamp("fecha");
+				activo = rs.getBoolean("activo");
 				existe = true;
 		    } 
 			rs.close();
@@ -181,10 +253,29 @@ public class MPublicacion {
 		return resultado;
 	}
 	
+	public boolean update(String campo, boolean valor) {
+		boolean resultado = false;
+		con = conexion.crearConexion();
+		String query = "UPDATE publicacion SET "+campo+" = ? WHERE id = "+id;
+		try {
+			ps = con.prepareStatement(query);
+			ps.setBoolean(1,valor);
+			ps.executeUpdate();
+			rs.close();
+			ps.close();
+			con.close();
+			resultado = true;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return resultado;
+	}
+	
 	public int contador(int usuario) {
 		int resultado = 0;
 		con = conexion.crearConexion();
-		String query = "SELECT id as total from publicacion WHERE usuario = ?";
+		String query = "SELECT id as total from publicacion WHERE usuario = ? AND activo = true";
 		try {
 			ps = con.prepareStatement(query, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 			ps.setInt(1,usuario);
@@ -202,22 +293,55 @@ public class MPublicacion {
 		return resultado;
 	}
 	
-	public int[] realizarBusqueda(int usuario,  int pag, int filas) {
+	public boolean likeado(int usuario) {
+		boolean result = false;
+		con = conexion.crearConexion();
+		String query = "SELECT * FROM isliked(?,?)";
+		try {
+			ps = con.prepareStatement(query);	
+			ps.setInt(1, id);
+			ps.setInt(2, usuario);
+			rs = ps.executeQuery();
+			
+			if(rs.next()) result = true;
+	
+			rs.close();
+			ps.close();
+			con.close();
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	public MPublicacion[] realizarBusqueda(int usuario,  int pag, int filas) {
 		con = conexion.crearConexion();
 		int offset;
-		int indice = 0;
-		int[] resultado = new int[filas];
+		int indice;
+		MPublicacion[] resultado = new MPublicacion[filas];
+		MPublicacion publi;
 		
+		indice = 0;
 		if(pag == 1) offset = 0;
 		else offset = (pag-1)*filas;
 		
-		String query = "SELECT id FROM publicacion WHERE usuario = ? ORDER BY id DESC LIMIT "+filas+" OFFSET "+offset;
+		String query = "SELECT * FROM publicacionData(?,?,?)";
 		try {
 			ps = con.prepareStatement(query);	
 			ps.setInt(1, usuario);
+			ps.setInt(2, filas);
+			ps.setInt(3, offset);
 			rs = ps.executeQuery();
 			while(rs.next()) {
-				resultado[indice] = rs.getInt("id");
+				publi = new MPublicacion();
+				publi.id = rs.getInt("id");
+				publi.usuario = rs.getInt("usuario");
+				publi.contenido = rs.getString("contenido");
+				publi.imagen = rs.getBytes("imagen");
+				publi.fecha = rs.getTimestamp("fecha");
+				publi.puNombre = rs.getString("puNombre");
+				publi.puUsername = rs.getString("puUsername");
+				resultado[indice] = publi;
 				indice++;
 			}
 			rs.close();

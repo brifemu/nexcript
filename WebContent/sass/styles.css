@@ -25,6 +25,12 @@
   color: #DCDCDD;
   text-shadow: 4px 4px black;
   font-weight: bold;
+  overflow: hidden;
+  border-right: 0.15em solid #1985A1;
+  white-space: nowrap;
+  margin: 0 auto;
+  -webkit-animation: typing 4s steps(40, end), blink-caret 0.75s step-end infinite;
+          animation: typing 4s steps(40, end), blink-caret 0.75s step-end infinite;
 }
 
 .login-form {
@@ -62,8 +68,45 @@
   height: 100vh;
 }
 
+@-webkit-keyframes typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: 95%;
+  }
+}
+
+@keyframes typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: 95%;
+  }
+}
+
+@-webkit-keyframes blink-caret {
+  from, to {
+    border-color: transparent;
+  }
+  50% {
+    border-color: #1985A1;
+  }
+}
+
+@keyframes blink-caret {
+  from, to {
+    border-color: transparent;
+  }
+  50% {
+    border-color: #1985A1;
+  }
+}
+
 .btn-primary {
   background-color: #1985A1;
+  border-color: #1985A1;
   color: #DCDCDD;
 }
 
@@ -73,10 +116,34 @@
 
 .btn-light {
   background-color: #DCDCDD;
+  border-color: #4C5C68;
 }
 
 .btn-dark {
   background-color: #46494C;
+  border-color: #46494C;
+}
+
+.btn-danger {
+  background-color: #c0392b;
+  border-color: #c0392b;
+}
+
+.btn-success {
+  background-color: #2ecc71;
+  border-color: #2ecc71;
+}
+
+.btn-like {
+  background-color: #9b59b6;
+  border-color: #9b59b6;
+  color: #DCDCDD;
+}
+
+.btn-like:hover {
+  background-color: #8e44ad;
+  border-color: #8e44ad;
+  color: #DCDCDD;
 }
 
 nav.navbar {
@@ -114,7 +181,7 @@ span.badge.badge-primary {
 
 span.badge.badge-alert {
   color: #DCDCDD;
-  background-color: #e74c3c;
+  background-color: #c0392b;
 }
 
 img.profile-small {
@@ -240,5 +307,109 @@ input.error {
   border: 1px dashed red;
   font-weight: 300;
   color: red;
+}
+
+div.alert.alert-success {
+  background-color: #2ecc71;
+  color: #DCDCDD;
+}
+
+div.alert.alert-success a {
+  text-decoration: underline;
+  color: #DCDCDD;
+}
+
+div.alert.alert-success a:hover {
+  -webkit-text-decoration-line: underline;
+          text-decoration-line: underline;
+  -webkit-text-decoration-style: wavy;
+          text-decoration-style: wavy;
+  -webkit-text-decoration-color: #DCDCDD;
+          text-decoration-color: #DCDCDD;
+}
+
+div.alert.alert-danger {
+  background-color: #c0392b;
+  color: #DCDCDD;
+}
+
+div.alert.alert-danger a {
+  text-decoration: underline;
+  color: #DCDCDD;
+}
+
+@-webkit-keyframes slidein {
+  from {
+    margin-left: 100%;
+    width: 300%;
+  }
+  to {
+    margin-left: 0%;
+    width: 100%;
+  }
+}
+
+@keyframes slidein {
+  from {
+    margin-left: 100%;
+    width: 300%;
+  }
+  to {
+    margin-left: 0%;
+    width: 100%;
+  }
+}
+
+.rating {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: reverse;
+      -ms-flex-direction: row-reverse;
+          flex-direction: row-reverse;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.rating > input {
+  display: none;
+}
+
+.rating > label {
+  position: relative;
+  width: 1em;
+  font-size: 6vw;
+  color: #FFD600;
+  cursor: pointer;
+}
+
+.rating > label::before {
+  content: "\2605";
+  position: absolute;
+  opacity: 0;
+}
+
+.rating > label:hover:before,
+.rating > label:hover ~ label:before {
+  opacity: 1 !important;
+}
+
+.rating > input:checked ~ label:before {
+  opacity: 1;
+}
+
+.rating:hover > input:checked ~ label:before {
+  opacity: 0.4;
+}
+
+@media only screen and (max-width: 600px) {
+  h1 {
+    font-size: 14px;
+  }
+  p {
+    font-size: 12px;
+  }
 }
 /*# sourceMappingURL=styles.css.map */

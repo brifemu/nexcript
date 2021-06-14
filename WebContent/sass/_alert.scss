@@ -1,0 +1,29 @@
+@import '_colors.scss';
+
+$success: $success;
+$danger: $alert;
+$alert_color_font: $white;
+
+div.alert {
+    &.alert-success {
+        background-color: $success;
+        color: $alert_color_font;
+        a {
+            text-decoration: underline;
+            color: $alert_color_font;
+            &:hover {
+                text-decoration-line: underline;
+                text-decoration-style: wavy;
+                text-decoration-color: $alert_color_font;
+            }
+        }
+    }
+    &.alert-danger {
+        background-color: $danger;
+        color: $alert_color_font;
+        a {
+            text-decoration: underline;
+            color: $alert_color_font;
+        }
+    }
+}

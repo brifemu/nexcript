@@ -2,6 +2,7 @@ $(document).ready(function() {
 	
   $('select').on('change', function() {
 	  $("#rol").val() === "Programador" ? $("#form-username").css("display", "block") : $("#form-username").css("display", "none");
+	  $("#rol").val() === "Programador" ? $("#form-lenguaje").css("display", "block") : $("#form-lenguaje").css("display", "none");
   });
   
   $("#registro-form").validate({

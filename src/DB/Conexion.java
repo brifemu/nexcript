@@ -6,12 +6,20 @@ public class Conexion {
     final String user = "a20-bfermun";
     final String pass = "a20-bfermun"; */
 	
-	final String ip = "localhost";
+	/*final String ip = "localhost";
     final int port = 5432;
     final String db = "proyecto";
     final String schema = "proyecto";
 	final String user = "usuario";
-    final String pass = "usuaria";
+    final String pass = "usuaria";*/
+    
+    final String ip = "ns3034756.ip-91-121-81.eu";
+    final int port = 5432;
+    final String db = "a20-bfermun";
+    final String schema = "proyecto";
+	final String user = "a20-bfermun";
+    final String pass = "a20-bfermun";
+    
 	final String url = "jdbc:postgresql://"+ip+":"+port+"/"+db+"?currentSchema="+schema;
 	
     Connection con;

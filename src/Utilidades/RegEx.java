@@ -4,6 +4,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RegEx {
+	
+	//Comprobación de las expresiones regulares más usadas
 	public boolean comprobar(String tipo, boolean espacio, String cadena) {		
 		String regEx = null;
 		switch(tipo.toLowerCase()) {

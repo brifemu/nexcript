@@ -13,7 +13,8 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/404.css">
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/404.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" rel="stylesheet" type="text/css">
-    <title>nexcript</title>
+    <title>nexcript > Error 404</title>
+    <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/src/images/favicon.png">
 </head>
 <body>
 	<div class="text">
